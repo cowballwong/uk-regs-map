@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="An interactive map of the building regulations system in England: Acts, regulations, Approved Documents and the British Standards they cite, with the quoted links between them. A personal hobby project by AW Design, not an official website.">
+<link rel="canonical" href="https://anzonwong.com/uk-regs-map/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="UK Building Regulations Map (England)">
+<meta property="og:description" content="An interactive map of the building regulations system in England: Acts, regulations, Approved Documents and the British Standards they cite, with the quoted links between them. A personal hobby project by AW Design, not an official website.">
+<meta property="og:url" content="https://anzonwong.com/uk-regs-map/">
+<meta name="color-scheme" content="only light">
+<meta name="theme-color" content="#f5ede4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23f5ede4%22/%3E%3Cpath d=%22M8 22L16 9L24 20M8 22L24 20%22 stroke=%22%235a4c40%22 stroke-width=%221.6%22 fill=%22none%22/%3E%3Ccircle cx=%228%22 cy=%2222%22 r=%223.2%22 fill=%22%235a4c40%22/%3E%3Ccircle cx=%2216%22 cy=%229%22 r=%223.6%22 fill=%22%23c4763c%22/%3E%3Ccircle cx=%2224%22 cy=%2220%22 r=%222.8%22 fill=%22%230072b2%22/%3E%3C/svg%3E">
+<meta property="og:image" content="https://anzonwong.com/uk-regs-map/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="UK Building Regulations Map (England): a network of Acts, regulations, Approved Documents and British Standards">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="UK Building Regulations Map (England): a network of Acts, regulations, Approved Documents and British Standards">
+<title>UK Building Regulations Map</title>
+<style>
+:root{
+  --terrat:#97521f;
+  --cream:#f5ede4; --paper:#fffdf9; --ink:#1a1410; --terra:#c4763c; --muted:#76604a; --ink2:#4a3d33;
+  --rule:#e3d6c6; --soft:#efe4d6;
+  --serif: Georgia, "Times New Roman", serif;
+  --zh: "Microsoft JhengHei", "Noto Sans TC", "PingFang TC", sans-serif;
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px); --sal:env(safe-area-inset-left,0px); --sar:env(safe-area-inset-right,0px);
+  --top:calc(64px + var(--sat)); --foot:calc(32px + var(--sab));
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:#f5ede4;color:var(--ink);font-family:var(--serif);-webkit-text-size-adjust:100%}
+.zh{font-family:var(--zh)}
+button,select,input{font:inherit;color:inherit}
+
+/* ---------- top bar ---------- */
+.top{position:fixed;left:0;right:0;top:0;height:var(--top);display:flex;align-items:center;gap:22px;padding:var(--sat) max(24px,var(--sar)) 0 max(24px,var(--sal));background:var(--paper);border-bottom:1px solid var(--rule);z-index:30}
+.ttl{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.ttl .t-zh{font-family:var(--zh);font-weight:700;font-size:19px;letter-spacing:.06em;white-space:nowrap}
+.ttl .t-en{font-style:italic;font-size:13px;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
+.seg{display:flex;border:1px solid var(--rule);border-radius:2px;background:var(--cream);padding:2px;margin-left:8px}
+.seg button{border:0;background:none;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--muted);border-radius:1px}
+.seg button .zh{font-size:13px;margin-right:6px}
+.seg button.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px rgba(26,20,16,.12)}
+.seg button.on .zh{color:var(--terrat)}
+.spacer{flex:1}
+.search{position:relative;flex:1 1 420px;max-width:600px;min-width:0;margin:0 auto}
+.search input{width:100%;height:44px;border:1.5px solid var(--terra);background:var(--paper);border-radius:4px;padding:0 44px 0 42px;font:15px var(--serif);outline:none;-webkit-appearance:none;box-shadow:0 1px 3px rgba(26,20,16,.07);transition:box-shadow .15s}
+.search input::placeholder{color:#9c8672;opacity:1}
+.search input:focus{background:#fff;box-shadow:0 0 0 3px rgba(196,118,60,.2),0 2px 8px rgba(26,20,16,.08)}
+.search input::-webkit-search-cancel-button{cursor:pointer}
+.search .si{position:absolute;left:14px;top:13px;pointer-events:none}
+.search .qk{position:absolute;right:11px;top:11px;min-width:22px;height:22px;line-height:20px;text-align:center;font:12px var(--serif);color:var(--muted);border:1px solid var(--rule);border-bottom-width:2px;border-radius:3px;background:var(--cream);pointer-events:none}
+.search input:focus~.qk,.search input:not(:placeholder-shown)~.qk{display:none}
+.search ul{position:absolute;left:0;right:0;top:50px;min-width:100%;max-height:min(480px,calc(100vh - 140px));overflow:auto;margin:0;padding:4px 0;list-style:none;background:var(--paper);border:1px solid var(--rule);border-radius:4px;box-shadow:0 12px 34px rgba(26,20,16,.16);display:none;z-index:40}
+.search ul.open{display:block}
+.search li{padding:8px 12px;cursor:pointer;display:flex;gap:10px;align-items:baseline;font-size:13.5px}
+.search li:hover,.search li.act{background:var(--soft)}
+.search li .sw{width:8px;height:8px;border-radius:50%;flex:none;align-self:center}
+.search li .c{font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:62%}
+.search li .n{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.search li .tag{flex:none;margin-left:auto;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--terrat);border:1px solid var(--terra);padding:0 5px;white-space:nowrap}
+.search li mark{background:none;color:var(--terrat)}
+.search li .ic{flex:none;align-self:center;color:var(--muted)}
+.search li.rc .c,.search li.pop .c{font-weight:normal;max-width:none;flex:0 1 auto}
+.search li.pop .n{flex:1}
+.search li .qx{flex:none;margin-left:auto;align-self:center;border:0;background:none;width:28px;height:28px;margin:-6px -6px -6px auto;font-size:18px;line-height:1;color:var(--muted);cursor:pointer;border-radius:50%}
+.search li .qx:hover{background:var(--rule);color:var(--ink)}
+.search li.hdr{display:flex;justify-content:space-between;align-items:center}
+.search .qclr{border:0;background:none;padding:2px 4px;font:11px var(--serif);letter-spacing:.04em;text-transform:none;color:var(--terrat);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.search li.hd{cursor:default;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:8px 12px 3px;background:none}
+.wm{font-size:15px;letter-spacing:.32em;white-space:nowrap;display:flex;align-items:center}
+.wm i{font-style:normal;display:inline-block;width:1.5px;height:18px;background:var(--terra);margin:0 .5em 0 .22em}
+
+/* ---------- stage + overlays ---------- */
+#stage{position:fixed;left:0;right:0;top:var(--top);bottom:var(--foot);touch-action:none;background:#f5ede4}
+#labels{position:fixed;left:0;right:0;top:var(--top);bottom:var(--foot);pointer-events:none;overflow:hidden;z-index:5}
+.lb{position:absolute;left:0;top:0;white-space:nowrap;text-align:center;line-height:1.2;will-change:transform;background:rgba(255,253,249,.84);padding:2px 6px 3px;border-radius:2px;box-shadow:0 1px 2px rgba(26,20,16,.06)}
+.lb b{display:block;font-size:12px;color:var(--ink);font-weight:bold;letter-spacing:.01em}
+.lb span{display:block;font-family:var(--zh);font-size:10.5px;color:#7a6652}
+.lb.sel{background:var(--ink);box-shadow:0 2px 8px rgba(26,20,16,.25)}
+.lb.sel b{font-size:14px;color:var(--paper)}
+.lb.sel span{font-size:12px;color:#e8d9c6}
+.cl{position:absolute;left:0;top:0;white-space:nowrap;text-align:center;will-change:transform;color:var(--muted);
+  text-shadow:0 0 2px #f5ede4,0 0 4px #f5ede4,0 0 7px #f5ede4,0 0 12px #f5ede4}
+.cl b{display:block;font-weight:normal;font-size:12px;letter-spacing:.26em;text-transform:uppercase}
+.cl span{display:block;font-family:var(--zh);font-size:12px;letter-spacing:.3em;margin-top:2px}
+.cl.sj{max-width:156px;white-space:normal;line-height:1.14;
+  text-shadow:0 0 2px #f5ede4,0 0 3px #f5ede4,0 0 5px #f5ede4,0 0 9px #f5ede4,0 0 14px #f5ede4}
+.cl.sj b{font-size:11px;font-weight:bold;letter-spacing:.01em;text-transform:none}
+.cl.sj span{font-size:11px;letter-spacing:.04em;margin-top:1px}
+#side .snote{margin:0 0 8px;font-size:11.5px;line-height:1.45;color:var(--ink2)}
+#side .snote .zh{display:block;font-size:11px;color:var(--muted)}
+#loading{position:fixed;inset:0;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;font-size:15px;color:var(--muted);font-style:italic;z-index:4;pointer-events:none}
+#loading .zh{font-style:normal;font-size:13px}
+.tip{background:var(--paper);border:1px solid var(--rule);padding:6px 9px;font:13px var(--serif);color:var(--ink);box-shadow:0 6px 18px rgba(26,20,16,.12);max-width:320px;white-space:normal}
+.tip .z{font-family:var(--zh);color:var(--muted);font-size:12px}
+.scene-tooltip,.float-tooltip-kap{padding:0!important;background:none!important;border-radius:0!important;color:var(--ink)!important}
+
+/* ---------- left: legend + filters ---------- */
+#side{position:fixed;left:16px;top:calc(var(--top) + 16px);z-index:15;width:282px;max-height:calc(100% - var(--top) - var(--foot) - 250px);overflow:auto;background:rgba(255,253,249,.95);border:1px solid var(--rule);font-size:12.5px;box-shadow:0 8px 26px rgba(26,20,16,.06)}
+#side .shd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--rule);cursor:pointer;user-select:none}
+#side .shd h3{margin:0;font-weight:normal;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+#side .shd .zh{letter-spacing:.1em;text-transform:none;margin-left:6px}
+#side.min .sbd{display:none}
+#side .sbd{padding:4px 14px 12px}
+#side h4{margin:12px 0 6px;font-weight:normal;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+#side h4 .zh{letter-spacing:.1em;margin-left:5px}
+.row{display:flex;align-items:center;gap:8px;padding:3px 0;line-height:1.25}
+.row label{display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0}
+.row .zh{color:var(--muted);font-size:11px;display:block}
+.row .ct{margin-left:auto;color:var(--muted);font-size:11px;padding-left:8px}
+.row input[type=checkbox]{margin:0;accent-color:var(--terrat);width:13px;height:13px}
+.sw{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.sw.sq{border-radius:2px}
+.row.dom{cursor:pointer;border-radius:2px;padding-left:3px}
+.row.dom:hover{background:var(--soft)}
+.row.dom.on{background:var(--soft);box-shadow:inset 2px 0 0 var(--terra)}
+.row .t{min-width:0}
+.row .t.one .zh{display:inline;margin-left:4px}
+#linesbox{position:fixed;left:16px;bottom:calc(var(--foot) + 16px);z-index:15;width:282px;background:rgba(255,253,249,.95);border:1px solid var(--rule);padding:4px 14px 10px;font-size:12px;box-shadow:0 8px 26px rgba(26,20,16,.06)}
+#linesbox h4{margin:8px 0 5px;font-weight:normal;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+#linesbox h4 .zh{letter-spacing:.1em;margin-left:5px}
+#linesbox .lnk .zh{font-size:11px}
+#side select{width:100%;height:30px;border:1px solid var(--rule);background:var(--cream);font-size:12.5px;padding:0 6px}
+.sep{height:1px;background:var(--rule);margin:10px 0 2px}
+.lnk{display:flex;align-items:center;gap:9px;padding:3px 0;white-space:normal;line-height:1.3}
+.lnk svg{flex:none}
+.lnk .zh{display:block;color:var(--muted);font-size:11.5px}
+.note{color:var(--muted);font-size:11.5px;line-height:1.4}
+
+/* ---------- right panel ---------- */
+#panel{position:fixed;top:calc(var(--top) + 14px);right:14px;bottom:calc(var(--foot) + 14px);width:420px;z-index:25;background:var(--paper);border:1px solid var(--rule);box-shadow:0 18px 50px rgba(26,20,16,.14);transform:translateX(calc(100% + 30px));transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+#panel.open{transform:none}
+#panel .grab{display:none}
+#panel .hd{padding:20px 24px 14px;border-bottom:1px solid var(--rule);position:relative}
+#panel .x{position:absolute;right:10px;top:10px;width:32px;height:32px;border:0;background:none;font-size:22px;cursor:pointer;color:var(--muted)}
+#panel .back{display:inline-flex;align-items:center;gap:5px;margin:0 0 8px;border:1px solid var(--rule);background:var(--cream);color:var(--ink);font-size:12px;padding:3px 10px 3px 8px;cursor:pointer;border-radius:2px}
+#panel .back .zh{color:var(--terrat)}
+#panel .back:hover{border-color:var(--terrat)}
+#panel .back[hidden]{display:none}
+#panel .kind{display:flex;align-items:center;gap:8px;padding-right:34px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.4}
+#panel .kind .zh{letter-spacing:.06em}
+#panel .code{font-size:25px;margin:8px 0 4px;letter-spacing:.01em;line-height:1.2}
+#panel .en{font-size:15.5px;font-style:italic;line-height:1.35}
+#panel .nzh{font-family:var(--zh);font-size:15.5px;margin-top:3px;letter-spacing:.03em;line-height:1.45}
+#panel .meta{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:10px;font-size:12px;color:var(--muted)}
+#panel .meta b{font-weight:normal;color:var(--ink)}
+#panel .bd{padding:14px 24px 20px;overflow:auto;flex:1;overscroll-behavior:contain}
+#panel .sum{font-size:14px;line-height:1.55;margin:0}
+#panel .sumzh{font-family:var(--zh);font-size:13.5px;line-height:1.75;color:var(--ink2);margin:6px 0 0}
+#panel .warn{margin-top:12px;font-size:12px;line-height:1.45;color:#8a5a2b;background:#fbf1e4;border-left:2px solid var(--terra);padding:7px 10px}
+#panel .warn .zh{display:block;font-size:11.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);background:var(--cream);padding:3px 8px;font-size:12px;line-height:1.3;border-radius:11px}
+.chip .zh{color:var(--muted);font-size:11.5px}
+.chip.dm{border-color:transparent;color:#fff}
+.chip.dm .zh{color:rgba(255,255,255,.85)}
+#panel h5{margin:22px 0 7px;font-weight:normal;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;align-items:baseline}
+#panel h5 .zh{letter-spacing:.06em}
+#panel h5 .n{margin-left:auto;letter-spacing:0;font-size:11px}
+#panel ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+#panel li{border-bottom:1px solid var(--rule);font-size:13px}
+#panel li .m{display:flex;align-items:center;gap:9px;padding:7px 2px;cursor:pointer}
+#panel li .m:hover{background:var(--soft)}
+#panel li .sw{width:8px;height:8px}
+#panel li .c{font-weight:bold;max-width:42%;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3;flex:none}
+#panel li .n{color:var(--muted);font-family:var(--zh);font-size:12px;overflow:hidden;flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4}
+#panel li .r{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+#panel li .qb{border:0;background:none;cursor:pointer;color:var(--terrat);font-size:11px;white-space:nowrap;padding:2px 4px}
+#panel li .qb:hover{text-decoration:underline}
+#panel .qs{display:none;padding:2px 2px 10px 17px}
+#panel li.ex .qs{display:block}
+#panel blockquote{margin:6px 0 0;padding:6px 10px;border-left:2px solid var(--rule);background:var(--cream);font-size:12.5px;line-height:1.5;color:var(--ink2);word-break:break-word}
+#panel blockquote .pg{display:block;margin-top:3px;font-size:11px;color:var(--muted);font-style:italic}
+#panel .why{padding:0 2px 10px 17px;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+#panel .why .zh{display:block;margin-top:3px;font-size:12.5px;line-height:1.65}
+#panel .why .ev{margin-top:5px;font-size:11px;color:var(--muted);font-style:italic}
+#panel .more{border:0;background:none;color:var(--terrat);cursor:pointer;padding:8px 2px;font-size:12px}
+#panel .crumb{font-size:12.5px;line-height:1.7;color:var(--ink2)}
+#panel .crumb a{color:var(--ink2);cursor:pointer;border-bottom:1px dotted var(--muted)}
+#panel .src{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px;padding:12px 24px;border-top:1px solid var(--rule);font-size:13px}
+#panel .src a{white-space:nowrap;color:var(--terrat);text-decoration:none;border-bottom:1px solid currentColor}
+#panel .src span{color:var(--muted);font-size:11px;flex-basis:100%}
+
+/* ---------- zoom + footer ---------- */
+.zoombar{position:fixed;right:18px;bottom:calc(var(--foot) + 16px);z-index:15;display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--rule)}
+.zoombar button{width:36px;height:34px;border:0;background:none;cursor:pointer;font-size:18px;line-height:1}
+.zoombar button+button{border-top:1px solid var(--rule)}
+.zoombar button:hover{color:var(--terrat)}
+.zoombar #zrot{height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:16px;color:var(--muted)}
+.zoombar #zrot .rl{font:10px var(--zh);letter-spacing:.05em}
+.zoombar #zrot.on{background:var(--terra);color:#fffdf9}
+.zoombar #zrot:focus-visible{outline:2px solid var(--ink);outline-offset:-3px}
+body.panel-open .zoombar{right:452px}
+.foot{position:fixed;left:0;right:0;bottom:0;height:var(--foot);display:flex;align-items:center;gap:18px;padding:0 max(20px,var(--sar)) var(--sab) max(20px,var(--sal));background:var(--paper);border-top:1px solid var(--rule);font-size:12px;color:var(--ink2);z-index:30;white-space:nowrap}
+.foot .zh{font-size:11.5px}
+.foot .aw{letter-spacing:.2em;font-size:11px}
+.foot .st{margin-left:auto;color:var(--muted);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+.foot > span{flex:none}
+.foot > span.st{flex:0 1 auto}
+.foot .fps{color:var(--muted);font-size:11px;min-width:0}
+.foot .vc{color:var(--muted);font-variant-numeric:tabular-nums}
+.foot .vc[hidden]{display:none}
+
+/* ---------- S7: status (superseded / duplicate), faded rows, About ---------- */
+#panel .stat{margin:0 0 12px;font-size:12.5px;line-height:1.5;color:#4a3d33;background:#efe7dc;border-left:2px solid #8b7355;padding:7px 10px}
+#panel .stat .zh{display:block;font-size:12px;color:#6b5a4a}
+#panel .stat a,#panel .info a{color:#1a1410;cursor:pointer;border-bottom:1px dotted #8b7355}
+#panel .info{margin-top:10px;font-size:12px;line-height:1.5;color:#4a3d33}
+#panel .info .zh{display:block;font-size:11.5px;color:#6b5a4a}
+#panel.faded .code,#panel.faded .en,#panel.faded .nzh{color:#76604a}
+#panel li.old .c,#panel li.old .n{opacity:.55}
+.search li.old .c,.search li.old .n{opacity:.55}
+.search li .tag.o{color:#76604a;border-color:#cbbfae}
+.abt{border:1px solid #e3d6c6;background:#f5ede4;height:32px;padding:0 12px;border-radius:2px;cursor:pointer;font-size:13px;white-space:nowrap;color:#1a1410;flex:none}
+.abt .zh{margin-left:5px;font-size:12.5px;color:var(--terrat)}
+.abt:hover{border-color:var(--terrat)}
+#about{position:fixed;left:0;top:0;right:0;bottom:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(26,20,16,.38);padding:calc(16px + var(--sat)) 16px calc(16px + var(--sab))}
+#about.open{display:flex}
+#about .box{position:relative;background:#fffdf9;color:#1a1410;border:1px solid #e3d6c6;box-shadow:0 24px 70px rgba(26,20,16,.28);width:100%;max-width:880px;max-height:100%;overflow:auto;overscroll-behavior:contain;padding:30px 36px 26px}
+#about .x{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;background:none;font-size:24px;cursor:pointer;color:#76604a}
+#about .kick{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#76604a}
+#about h2{margin:6px 0 2px;font-weight:normal;font-size:26px;line-height:1.25;padding-right:30px}
+#about h2 .zh{display:block;font-size:20px;font-weight:700;letter-spacing:.06em;margin-top:4px}
+#about h3{margin:24px 0 10px;font-weight:normal;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#76604a;border-bottom:1px solid #e3d6c6;padding-bottom:6px}
+#about h3 .zh{letter-spacing:.08em;margin-left:6px}
+#about .two{display:grid;grid-template-columns:1fr 1fr;gap:10px 32px}
+#about p,#about li{font-size:14px;line-height:1.6;margin:0 0 8px;color:#1a1410}
+#about .zh p,#about .zh li{font-family:var(--zh);font-size:13.5px;line-height:1.8;color:#4a3d33}
+#about ul{margin:0;padding-left:18px}
+#about li::marker{color:var(--terrat)}
+#about table{border-collapse:collapse;width:100%;font-size:13px}
+#about td{padding:5px 8px 5px 0;border-bottom:1px solid #efe4d6;vertical-align:top;color:#1a1410}
+#about td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;padding-right:0}
+#about td .zh{display:block;font-size:12px;color:#76604a}
+#about tr.tot td{border-bottom:0;font-weight:bold}
+#about .key{display:inline-block;vertical-align:-1px;margin-right:6px}
+#about .cred{margin-top:24px;padding-top:14px;border-top:1px solid #e3d6c6;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:12.5px;color:#4a3d33}
+#about .cred .wm{font-size:13px;color:#1a1410}
+@media (max-width:768px){
+  .abt{height:30px;padding:0 10px;font-size:12px}
+  .abt .en{display:none}
+  .abt .zh{margin-left:0}
+  #about{padding:calc(10px + var(--sat)) 10px calc(10px + var(--sab));align-items:stretch}
+  #about .box{padding:22px 18px 18px}
+  #about h2{font-size:21px}
+  #about h2 .zh{font-size:17px}
+  #about .two{grid-template-columns:1fr;gap:2px}
+  #about p,#about li{font-size:13.5px}
+}
+
+/* ---------- phones ---------- */
+@media (max-width:768px){
+  :root{--top:calc(56px + var(--sat));--foot:calc(44px + var(--sab))}
+  .top{padding:var(--sat) 16px 0 16px;gap:10px}
+  .ttl .t-zh{font-size:15px}
+  .ttl .t-en{font-size:10.5px}
+  .seg{position:fixed;left:16px;top:calc(var(--top) + 64px);margin:0;z-index:16;background:rgba(245,237,228,.95)}
+  .seg button{padding:5px 9px;font-size:12px}
+  .seg button .en{display:none}
+  .search{position:fixed;left:16px;right:16px;top:calc(var(--top) + 10px);max-width:none;margin:0;z-index:31}
+  .search input{font-size:16px;padding-right:12px}
+  .search .qk{display:none}
+  .search ul{max-height:min(420px,calc(100vh - var(--top) - 80px))}
+  .search li{padding:10px 12px}
+  .wm{font-size:11px;letter-spacing:.24em}
+  .wm i{height:14px}
+  #side{top:auto;bottom:calc(var(--foot) + 10px);left:16px;width:auto;right:68px;max-height:58%}
+  #side .sbd{padding:2px 12px 10px}
+  #side.min{right:auto}
+  .zoombar{right:16px;bottom:calc(var(--foot) + 10px)}
+  body.panel-open .zoombar{right:16px}
+  .foot{flex-wrap:wrap;gap:0 10px;padding:4px 16px var(--sab);height:var(--foot);align-content:center;white-space:normal;line-height:1.3;font-size:10.5px}
+  .foot .zh{font-size:10px}
+  .foot > span{flex:0 1 auto;min-width:0}
+  .foot .st,.foot .fps,.foot .hint{display:none}
+  .cl b{font-size:10px;letter-spacing:.14em}
+  .cl span{font-size:10px;letter-spacing:.16em}
+  .cl.sj{max-width:120px}
+  .cl.sj b,.cl.sj span{font-size:9.5px;letter-spacing:0}
+  .lb b{font-size:11px}.lb span{font-size:10px}
+  #panel{top:auto;left:0;right:0;bottom:0;width:auto;height:46%;transition:transform .35s cubic-bezier(.2,.8,.2,1),height .3s;border-left:0;border-right:0;border-bottom:0;border-radius:14px 14px 0 0;transform:translateY(105%);z-index:35}
+  #panel.full{height:86%}
+  #panel .grab{display:block;width:56px;height:5px;border-radius:3px;background:var(--rule);margin:8px auto 0;cursor:pointer;box-shadow:0 0 0 10px transparent}
+  #panel .hd{padding:8px 18px 10px}
+  #panel .code{font-size:20px;margin-top:4px}
+  #panel .en,#panel .nzh{font-size:14px}
+  #panel .bd{padding:10px 18px}
+  #panel .src{padding:10px 18px calc(14px + var(--sab))}
+}
+/* ---------- tablets and small laptops (769 to 1200 px) ---------- */
+@media (min-width:769px) and (max-width:1200px){
+  :root{--foot:calc(46px + var(--sab))}
+  .top{gap:14px;padding:var(--sat) max(18px,var(--sar)) 0 max(18px,var(--sal))}
+  .ttl{flex:0 1 auto}
+  .seg{margin-left:0;flex:none}
+  .seg button .en{display:none}
+  .seg button .zh{margin-right:0}
+  .search{flex:1 1 240px;min-width:160px;max-width:none}
+  .search ul{left:auto;width:max(100%,400px);max-width:calc(100vw - 32px)}
+  .search input{font-size:14px}
+  .wm{font-size:12px;letter-spacing:.24em;flex:none}
+  .abt{flex:none}
+  .foot{white-space:normal;line-height:1.3;gap:4px 14px;font-size:11.5px}
+  .foot > span:first-child{flex:1 1 auto;min-width:0}
+  .foot .st,.foot .fps{display:none}
+}
+@media (min-width:769px) and (max-width:1000px){
+  .ttl .t-zh{font-size:17px;letter-spacing:.03em}
+  .ttl .t-en{display:none}
+  .abt .en{display:none}
+  .abt .zh{margin-left:0}
+  .wm{font-size:11px;letter-spacing:.2em}
+  .foot{font-size:11px}
+}
+#about .disc{border:1px solid #c4763c;background:#fbf3ea;padding:12px 14px;margin:6px 0 14px;font-size:13.5px;line-height:1.55}
+#about .disc b{display:block;margin-bottom:4px;color:#8a4a1c}
+#about .disc b .zh{margin-left:8px}
+#about .disc p{margin:4px 0}
+#notice{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:rgba(26,20,16,.5);padding:calc(16px + var(--sat)) 16px calc(16px + var(--sab))}
+#notice[hidden]{display:none}
+#notice .nbox{width:100%;max-width:460px;background:#fffdf9;border:1px solid #c4763c;border-top:4px solid #c4763c;padding:22px 22px 18px;box-shadow:0 24px 70px rgba(26,20,16,.3);color:#1a1410}
+#notice h2{margin:0 0 10px;font-weight:normal;font-size:19px;line-height:1.3}
+#notice h2 .zh{display:block;font-size:16px;font-weight:700;letter-spacing:.04em;margin-top:2px}
+#notice p{margin:0 0 8px;font-size:14px;line-height:1.55}
+#notice p.zh{font-family:var(--zh);font-size:13.5px;line-height:1.75;color:#4a3d33}
+#notice .row2{display:flex;justify-content:flex-end;margin-top:14px}
+#notice button{border:1px solid #c4763c;background:#c4763c;color:#fffdf9;padding:8px 22px;cursor:pointer;font-size:14px}
+#notice button:focus-visible{outline:2px solid #1a1410;outline-offset:2px}
+
+/* ---------- search preview (click a dot in a search view: preview first, Open to switch) ---------- */
+/* the preview is a floating card over the map; the panel keeps the result table */
+#ppv{position:fixed;left:16px;top:calc(var(--top) + 16px);z-index:24;width:420px;max-width:calc(100vw - 32px);max-height:60vh;display:flex;flex-direction:column;background:var(--paper);border:1px solid #e8cfb2;border-top:3px solid var(--terra);box-shadow:0 18px 50px rgba(26,20,16,.18);color:var(--ink)}
+#ppv[hidden]{display:none}
+#ppv.off{visibility:hidden}
+#ppv .pvh{position:relative;flex:none;padding:12px 46px 11px 18px;background:#fbf3ea;border-bottom:1px solid #ecd9c4}
+#ppv .pvcx{position:absolute;right:6px;top:6px;width:34px;height:34px;border:0;background:none;font-size:23px;line-height:1;cursor:pointer;color:var(--muted)}
+#ppv .pvcx:hover{color:var(--terrat)}
+#ppv .pvtg{display:none;position:absolute;right:40px;top:6px;width:34px;height:34px;border:0;background:none;font-size:15px;line-height:1;cursor:pointer;color:var(--terrat)}
+#ppv .pvcx:focus-visible,#ppv .pvtg:focus-visible{outline:2px solid var(--ink);outline-offset:-3px}
+#ppv .pvsc{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:10px 18px 14px}
+#ppv .pvs{margin:0 0 7px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+#ppv .pvs.zh{font-family:var(--zh);font-size:13px;line-height:1.7;color:var(--ink2)}
+#ppv .pvxl{margin:8px 0 2px;font-size:12px;line-height:1.45;color:var(--muted)}
+#ppv .pvxl .dash{display:inline-block;width:22px;height:0;border-top:2px dashed var(--terra);vertical-align:middle;margin-right:6px;opacity:.8}
+#ppv .pvu{margin:8px 0 0;font-size:12.5px}
+#ppv .pvu a{color:var(--terrat)}
+#ppv .pvk{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.4}
+#ppv .pvk .zh{letter-spacing:.06em}
+#ppv .pvc{font-size:19px;line-height:1.25;margin:5px 0 2px;overflow-wrap:anywhere}
+#ppv .pve{font-size:13.5px;font-style:italic;line-height:1.35;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#ppv .pvz{font-family:var(--zh);font-size:13.5px;line-height:1.45;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#ppv .pvm{margin-top:6px;font-size:12px;color:var(--muted)}
+#ppv .pvm b{font-weight:normal;color:var(--ink)}
+#ppv .pvb{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+#ppv .pvo{border:1px solid var(--terra);background:var(--terra);color:#fffdf9;padding:7px 16px;cursor:pointer;font-size:14px;border-radius:2px}
+#ppv .pvo:hover{background:#a95f2c;border-color:#a95f2c}
+#ppv .pvo:focus-visible,#ppv .pvx:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+#ppv .pvx{border:0;background:none;color:var(--muted);cursor:pointer;font-size:12px;padding:6px 4px;border-bottom:1px dotted var(--muted)}
+/* narrow tablets: the legend shrinks to its first rows and the card sits under it */
+body.pv-stack #side{max-height:172px}
+/* the previewed document's links: a table under its row in the result list */
+#panel .pvt{margin:0 0 8px 3px;padding:6px 8px 6px 10px;background:#fdf6ee;border-left:3px solid var(--terra)}
+#panel .pvt .pvtt{margin:2px 0 5px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#panel .pvt .pvtt .zh{letter-spacing:.05em}
+#panel .pvt ul{border-top:0}
+#panel .pvt li{border-bottom:1px solid #f0e2d2;font-size:12px}
+#panel .pvt li:last-child{border-bottom:0}
+#panel .pvt .pvn,#panel .pvt .pvth{display:grid;grid-template-columns:minmax(0,7.6em) minmax(0,1fr) 6.2em 4.7em;gap:7px;align-items:center}
+#panel .pvt .pvth{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:2px 2px 4px;border-bottom:1px solid #ecd9c4}
+#panel .pvt .pvn{width:100%;border:0;background:none;padding:5px 2px;text-align:left;cursor:pointer;font:inherit;font-size:12px;color:var(--ink);border-radius:2px}
+#panel .pvt .pvn:hover{background:#f6e3cf}
+#panel .pvt .pvn:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+#panel .pvt .pvn[disabled]{cursor:default;opacity:.55}
+#panel .pvt .pvn[disabled]:hover{background:none}
+#panel .pvt .c{display:flex;align-items:flex-start;gap:6px;max-width:none;font-weight:bold;overflow:hidden;-webkit-line-clamp:unset;line-height:1.25}
+#panel .pvt .c .sw{flex:none;width:7px;height:7px;border-radius:50%;margin-top:4px}
+#panel .pvt .c b{font-weight:bold;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#panel .pvt .n{display:block;font-family:var(--zh);font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#panel .pvt .rl{font-size:10.5px;color:var(--ink2);line-height:1.25}
+#panel .pvt .rl .zh{font-size:10px;color:var(--muted)}
+#panel .pvt .pvth span{line-height:1.2}
+#panel .pvt .t{justify-self:stretch;text-align:center;font-size:9.5px;letter-spacing:.03em;color:var(--muted);border:1px solid var(--rule);padding:1px 3px;line-height:1.25}
+#panel .pvt .t.in{color:var(--terrat);border-color:var(--terrat)}
+#panel .pvt .t.ex{border-style:dashed;border-color:var(--terrat);color:#a95f2c}
+#panel .pvt .pvmore{margin:4px 0 0;font-size:11px;color:var(--muted)}
+#panel li.pvr > .m{background:#fbe6cf;box-shadow:inset 3px 0 0 var(--terra)}
+.lb.pvl{background:var(--terra)}
+.lb.pvl b{color:#fffdf9}
+.lb.pvl span{color:#fbe6cf}
+.pvring{position:absolute;left:0;top:0;width:34px;height:34px;border:2.5px solid var(--terra);border-radius:50%;box-shadow:0 0 0 3px rgba(255,253,249,.85),0 0 14px rgba(196,118,60,.45);display:none;will-change:transform}
+
+/* ---------- collapsible panel: desktop and tablet rail ---------- */
+#prail{position:absolute;left:-35px;top:14px;display:flex;flex-direction:column;gap:6px}
+#panel:not(.open) #prail{display:none}
+#prail button{width:35px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border:1px solid var(--rule);border-right:0;background:var(--paper);box-shadow:-5px 5px 14px rgba(26,20,16,.1);cursor:pointer;border-radius:3px 0 0 3px;color:var(--ink)}
+#prail button:hover{color:var(--terrat)}
+#prail button:focus-visible{outline:2px solid var(--ink);outline-offset:-3px}
+#prail .ar{font-size:19px;line-height:1;color:var(--terrat)}
+#prail .rl{writing-mode:vertical-rl;font:11.5px var(--zh);letter-spacing:.12em}
+#pback2[hidden]{display:none}
+#panel.col{transform:translateX(calc(100% + 15px))}
+#panel.col{box-shadow:none}
+body.panel-open.panel-col .zoombar{right:18px}
+#pmin{display:none;position:absolute;right:44px;top:10px;width:32px;height:32px;border:0;background:none;font-size:20px;line-height:1;cursor:pointer;color:var(--muted)}
+@media (max-width:768px){
+  #prail{display:none}
+  #panel .kind{padding-right:74px}
+  #pmin{display:block}
+  #panel.full{height:80%}
+  /* zoom buttons sit on top of the sheet, never behind it */
+  .zoombar{transition:bottom .3s}
+  body.panel-open .zoombar{flex-direction:row;bottom:calc(var(--sheet,0px) + 8px)}
+  body.panel-open .zoombar button+button{border-top:0;border-left:1px solid var(--rule)}
+  /* minimised sheet: a slim bar with the title, tap to expand */
+  #panel.mini{height:auto}
+  #panel.mini .kind,#panel.mini .en,#panel.mini .meta,#panel.mini .bd,#panel.mini .src{display:none}
+  #panel.mini .hd{padding:4px 170px calc(10px + var(--sab)) 18px;cursor:pointer;border-bottom:0}
+  #panel.mini .back{position:absolute;right:80px;top:13px;margin:0}
+  #panel.mini .code{font-size:16px;margin:4px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #panel.mini .nzh{font-size:12.5px;margin-top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #panel.mini .grab{margin-bottom:2px}
+  /* phones: the preview card is pinned at the top of the map, compact and collapsible to one line */
+  #ppv{left:10px;right:10px;width:auto;max-width:none;box-shadow:0 10px 30px rgba(26,20,16,.2)}
+  #ppv .pvh{padding:8px 80px 9px 14px}
+  #ppv .pvtg{display:block}
+  #ppv .pvk{font-size:9.5px;letter-spacing:.1em;white-space:nowrap;overflow:hidden}
+  #ppv .pvc{font-size:16px;margin-top:3px}
+  #ppv .pve{-webkit-line-clamp:1;font-size:12.5px}
+  #ppv .pvz{-webkit-line-clamp:1;font-size:12.5px}
+  #ppv .pvm{margin-top:3px;font-size:11.5px}
+  #ppv .pvb{margin-top:6px;gap:8px}
+  #ppv .pvo{padding:5px 13px;font-size:13px}
+  #ppv .pvsc{padding:8px 14px 10px}
+  #ppv .pvs{font-size:13px}
+  #ppv.c .pvh{padding:6px 80px 6px 14px;border-bottom:0;cursor:pointer}
+  #ppv.c .pvk,#ppv.c .pve,#ppv.c .pvm,#ppv.c .pvb,#ppv.c .pvsc{display:none}
+  #ppv.c .pvtg,#ppv.c .pvcx{top:2px}
+  #ppv.c .pvc{margin:0;font-size:14px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #ppv.c .pvz{display:block;margin:0;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #panel .pvt{margin-left:0;padding:5px 6px 5px 8px}
+  #panel .pvt .pvn,#panel .pvt .pvth{grid-template-columns:minmax(0,7em) minmax(0,1fr) 5.8em 4.6em;gap:6px}
+  /* the legend rides on top of the sheet too, left of the zoom buttons */
+  #side{transition:bottom .3s}
+  body.panel-open #side{bottom:calc(var(--sheet,0px) + 8px);right:136px}
+  body.panel-open #side.min{right:auto;max-width:calc(100% - 152px)}
+}
+/* QA r1 C-01/C-03: the footer wraps instead of overflowing; its real height is measured into --foot (script below) */
+.foot{height:auto!important;min-height:calc(36px + var(--sab));flex-wrap:wrap;white-space:normal;align-content:center;row-gap:3px;column-gap:16px;padding-top:6px;padding-bottom:calc(6px + var(--sab));line-height:1.35}
+.foot > span.fd,.foot > span.fl{flex:1 1 340px;min-width:0}
+.foot > span.aw,.foot > span.vc{flex:none;white-space:nowrap}
+.foot > span.st{flex:0 1 auto;min-width:0;margin-left:0}
+.foot > span.fds{display:none}
+@media (max-width:768px){.foot > span.fl,.foot > span.fd{display:none}.foot > span.fds{display:inline;flex:1 1 100%}}
+@media (min-width:769px) and (max-width:900px){.ttl{min-width:118px}.ttl .t-en:first-child{white-space:normal!important;line-height:1.1}}
+@media (min-width:769px) and (max-width:1000px){.ttl .t-en:first-child{font-size:14px}.search input::placeholder{font-size:12px}}
+#sideh #sidet{margin-left:10px}
+.zh:not(.keep),.t-zh,.nzh{display:none!important}
+@media (min-width:1201px){.seg button .zh.keep{display:none}}
+@media (min-width:1001px){.abt .zh.keep{display:none}}
+@media (min-width:769px) and (max-width:1000px){.ttl .t-en:first-child{display:block!important}}
+/* QA r2 C2-01: phones, legend open + sheet open: the legend never rises above the layout switcher (its rows scroll inside) */
+@media (max-width:768px){body.panel-open #side{max-height:max(44px,calc(100% - var(--sheet,0px) - var(--top) - 116px))}}
+#sideh:focus-visible{outline:2px solid var(--terrat);outline-offset:-2px}
+/* QA r2 C2-02: light text on a terra fill uses the darker terra (#97521f, 6.2:1 with #fffdf9); placeholder 5.3:1 */
+#notice button{border-color:var(--terrat);background:var(--terrat)}
+.zoombar #zrot.on,#ppv .pvo,.lb.pvl{background:var(--terrat);border-color:var(--terrat)}
+.search input::placeholder{color:#76604a}
+.ttl .t-sub{font-size:11px;letter-spacing:.08em;color:var(--muted)}
+.ttl:focus{outline:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="ttl" tabindex="-1"><span class="t-en">UK Building Regulations Map</span><span class="t-en t-sub">ENGLAND · AW DESIGN</span></div>
+  <div class="seg" id="mode" role="group" aria-label="Layout">
+    <button data-m="dept" class="on"><span class="zh keep">Type</span><span class="en">By document type</span></button>
+    <button data-m="domain"><span class="zh keep">Domain</span><span class="en">By domain</span></button>
+    <button data-m="subject"><span class="zh keep">Subject</span><span class="en">By subject</span></button>
+  </div>
+  <div class="search" role="search">
+    <svg class="si" width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="#c4763c" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5L13 13"/></svg>
+    <input id="q" type="search" placeholder="Search Acts, ADs, BS numbers…" autocomplete="off" enterkeyhint="search" aria-label="Search Acts, regulations, Approved Documents and British Standards" aria-controls="qres" aria-keyshortcuts="/">
+    <kbd class="qk" title="Press / to search">/</kbd>
+    <ul id="qres" role="listbox" aria-label="Suggestions"></ul>
+  </div>
+  <button class="abt" id="abtb" aria-haspopup="dialog" aria-controls="about"><span class="en">About</span><span class="zh keep">About</span></button>
+  <div class="wm">AW<i></i>DESIGN</div>
+</header>
+
+<div id="loading"><span id="loadt">Arranging the documents and provisions…</span></div>
+<div id="stage"></div>
+<div id="labels"></div>
+
+<aside id="side">
+  <div class="shd" id="sideh" role="button" tabindex="0" aria-controls="side" aria-expanded="true"><h3>Legend &amp; filters</h3><span id="sidet" style="color:var(--muted)">−</span></div>
+  <div class="sbd" id="sideb"></div>
+</aside>
+
+<aside id="panel" inert aria-live="polite">
+  <div id="prail"><button id="ptab" type="button" aria-controls="panel" aria-expanded="true" title="Collapse panel"><span class="ar" aria-hidden="true">›</span><span class="rl">Hide</span></button><button id="pback2" type="button" hidden title="Back" aria-label="Back to the previous selection"><span class="ar" aria-hidden="true">‹</span><span class="rl">Back</span></button></div>
+  <div class="grab"></div>
+  <div class="hd">
+    <button class="x" id="px" aria-label="Close">×</button>
+    <button id="pmin" type="button" aria-label="Minimise" aria-expanded="true">−</button>
+    <button class="back" id="pback" type="button" hidden aria-label="Back to the previous selection">‹  Back</button>
+    <div class="kind" id="pkind"></div>
+    <div class="code" id="pcode"></div>
+    <div class="en" id="pen"></div>
+    <div class="nzh" id="pzh"></div>
+    <div class="meta" id="pmeta"></div>
+  </div>
+  <div class="bd" id="pbody"></div>
+  <div class="src" id="psrc"></div>
+</aside>
+
+<section id="ppv" hidden aria-label="Preview" aria-live="polite"></section>
+
+<div class="zoombar"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zfit" aria-label="Fit all" style="font-size:13px">⤢</button><button id="zrot" type="button" aria-label="Auto-rotate" aria-pressed="true"><span aria-hidden="true">⟳</span><span class="rl" aria-hidden="true">Rotate</span></button></div>
+
+<footer class="foot">
+  <span class="fd">Personal hobby project by AW Design, not a government website. Navigation aid, not legal advice: check the official text. England only. Transitional provisions can change which edition applies to a project. Data checked 9 November 2026.</span>
+  <span class="fds">Hobby project by AW Design, not official, not legal advice. England only. Transitional provisions can change which edition applies. Data checked 9 November 2026. Licences: see About.</span>
+  <span class="fl">Contains public sector information licensed under the Open Government Licence v3.0 (legislation.gov.uk, GOV.UK, HSE). British Standards: number, title and edition as printed in the Approved Documents only.</span>
+  <span class="aw">AW DESIGN</span>
+  <span class="vc" id="visits" hidden>Visits: <span id="visitsn"></span></span>
+  <span class="st" id="stats"></span>
+  <span class="fps" id="fps"></span>
+</footer>
+
+<div id="notice" role="dialog" aria-modal="true" aria-labelledby="noticet">
+  <div class="nbox">
+    <h2 id="noticet">Personal hobby project</h2>
+    <p>This is not an official UK Government website and is not legal advice. Always check the official text. England only. The edition that applies to a project can depend on transitional provisions (when the notice or application was made and when work started); the edition shown is the one in force for new applications on the data date, 9 November 2026, including any text it already prints for later dates.</p>
+    <div class="row2"><button id="noticex" type="button">OK</button></div>
+  </div>
+</div>
+<script>
+(function(){var n=document.getElementById('notice');if(!n)return;var k='ukmap_notice_ok',b=document.getElementById('noticex');
+try{if(localStorage.getItem(k)==='1'){n.hidden=true;return;}}catch(e){}
+function trap(e){if(n.hidden)return;if(e.key==='Tab'){e.preventDefault();b.focus();}else if(e.target!==b){e.stopImmediatePropagation();if(e.key!=='Enter'&&e.key!==' ')e.preventDefault();}}
+document.addEventListener('keydown',trap,true);
+b.addEventListener('click',function(){n.hidden=true;document.removeEventListener('keydown',trap,true);try{localStorage.setItem(k,'1');}catch(e){}});
+setTimeout(function(){try{b.focus();}catch(e){}},0);})();
+</script>
+
+<div id="about" role="dialog" aria-modal="true" aria-labelledby="abth">
+  <div class="box">
+    <button class="x" id="abtx" aria-label="Close">×</button>
+    <div class="kick">About</div>
+    <h2 id="abth">UK Building Regulations Map (England)</h2>
+    <div class="disc">
+      <b>Disclaimer</b>
+      <p>This is a personal hobby project by Anzon Wong (AW Design). It is not an official website and does not represent, and is not endorsed by, the Ministry of Housing, Communities and Local Government, the Building Safety Regulator, the Health and Safety Executive, The National Archives or BSI. It is a navigation aid only and is not legal or professional advice. Always check the official text before relying on anything shown here. It covers England only: Wales, Scotland and Northern Ireland have their own rules. The edition that applies to a project can depend on transitional provisions (when the notice or application was made and when work started); the edition shown is the one in force for new applications on the data date, 9 November 2026, including any text it already prints for later dates.</p>
+    </div>
+    <h3>What this is</h3>
+    <p>One network of the building regulations system in England: the Acts, the regulations made under them, Schedule 1 of the Building Regulations 2010, every Approved Document in force, HSE's CDM guidance and the 455 British Standards that the Approved Documents cite. Select any dot (click or tap) to see what it cites, what cites it, and the sentence that makes the link.</p>
+    <h3>How to read the lines</h3>
+    <ul>
+      <li><svg class="key" width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="#a38a70" stroke-width="1.8"/></svg><b>Solid line</b> (836): a citation found in the citing document's own words. Select a dot, then press Quote on a row in its panel to read the quoted sentence and where it is (PDF page; an index paragraph or table only where the Approved Document gives one, see below). Types: cites, explains (an Approved Document and the Part it gives guidance on), made under (a regulation and its enabling Act, from the "powers conferred" sentence of its introduction) and amends (where the operative text says the other instrument "is amended", or amends one of its provisions with "In ... of the other instrument ... substitute / insert / omit"; never from footnotes or explanatory notes, and never from words that an amendment inserts into another instrument; the amending provisions of the Building Safety Act 2022 and the Fire Safety Act 2021 are read from their revised text). Two instruments can be joined by two lines, for example made under and amends.</li>
+      <li><svg class="key" width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="#8f8171" stroke-width="1.8"/></svg><b>Grey tree line</b>: the Building Regulations 2010 and its Schedule 1 Parts A to T and regulation 7 (19 provisions). Each Approved Document has a solid line to its Part.</li>
+      <li><svg class="key" width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="#2f2520" stroke-width="1.8" stroke-dasharray="4 3"/></svg><b>Dashed line</b> (17): a link suggested by AI where documents are used together but neither cites the other. Each has a written reason. It is not a citation.</li>
+      <li><b>Where to look</b>: every quoted line gives the PDF page on which the quote is printed. "AD index" gives the paragraphs that the Approved Document's own printed index lists for that standard (AD B Volumes 1 and 2, AD K and AD M Volume 1). "In Table 6.2" is shown only where that table's caption is printed on the same page as the quote. No other paragraph numbers are shown: worked out from the PDF text, they would be a guess, not the Approved Document's own reference.</li>
+      <li><b>Volumes</b>: where an Approved Document names another one that has two volumes (AD B, F, L, M and R), the line goes to the volume it names. Where it names no volume, a volume of a two-volume Approved Document is linked to the volume with the same number (AD L Volume 1 to AD M Volume 1), and any other Approved Document is linked to both volumes. The panel says which rule made the line: "volume not named; linked to the volume with the same number as the citing AD" or "volume not named, so both volumes are linked". No caption means the quoted text names the volume.</li>
+      <li><b>In force</b>: for an Approved Document this means the edition approved under section 6 of the Building Act 1984 that has taken effect. This site says "take effect" for Approved Documents (the words of the section 6 notices of approval) and "come into force" for Acts and regulations.</li>
+      <li><b>Topic areas</b> (coloured regions in the domain and subject views) follow the Parts of Schedule 1 and the main regimes. Topics are never drawn as lines.</li>
+    </ul>
+    <h3>British Standards</h3>
+    <ul>
+      <li>Each standard shows only its number, title and edition as printed in the Approved Document that cites it (Crown copyright, Open Government Licence). Where two Approved Documents cite different editions, both are shown.</li>
+      <li>The standards themselves are BSI publications. Their text is not reproduced, and BSI product pages are not linked: BSI's website terms permit linking to its home page, and they do not allow commercial collection of its product listings.</li>
+      <li>Edition status for 85 standards was checked on 9 November 2026 against public pages not run by BSI: mainly the NBS Publication Index, plus trade bodies, standards retailers, ISO and other national standards bodies. NBS and the retailers republish BSI catalogue data, so they are not independent of BSI's own records. Each flag names its source, and every source was opened again to confirm it. A British Standard numbered BS EN or BS EN ISO is the UK adoption of a European standard, published with the same text by every national standards body (for example SS-EN in Sweden, NEN-EN in the Netherlands, DIN EN in Germany); where a source names another national adoption of the same EN edition, that is read as the same edition of the BS EN. Confirm with BSI before relying on an edition.</li>
+      <li>One rule for every flag: a cited edition shows "newer edition exists" when a later edition, or a later +A amendment of the same edition, has been published. Corrigenda do not count. A successor with a different number (a series split or a replacement series) makes the cited edition "withdrawn" where a source shows it withdrawn, otherwise "newer edition exists"; where both apply, "withdrawn" is shown. A cited edition that is still the newest edition of its own number stays "cited edition current" even where a source calls it "superseded but remains current" because a European standard with another number replaces it in principle (BS 476-20, -21 and -22). The status is worked out for each Approved Document that cites the standard, and for each edition that document prints anywhere (its standards list, its text or its index; some print two). Where these citations have different results, the dot says "depends on citing AD" and the panel gives one row per Approved Document and edition, with the edition and title that document prints. Result: newer edition exists 40, cited edition withdrawn 12, cited edition current 25, depends on citing AD 7, inconclusive 1 (shown as not checked). The other standards say "not checked": no status is guessed from age.</li>
+      <li>An Approved Document cites a specific edition. Using a newer edition is a designer's judgement to agree with building control.</li>
+    </ul>
+    <h3>Sources</h3>
+    <table>
+      <tr><td>Acts and statutory instruments, from legislation.gov.uk (introductions, operative text, Schedule 1)</td><td class="n">26</td></tr>
+      <tr><td>Schedule 1 Parts and regulation 7 of the Building Regulations 2010</td><td class="n">19</td></tr>
+      <tr><td>Approved Documents in force on 9 Nov 2026, from GOV.UK (PDF text)</td><td class="n">24</td></tr>
+      <tr><td>HSE L153 (CDM 2015 guidance)</td><td class="n">1</td></tr>
+      <tr><td>British Standards cited by the Approved Documents (586 citations)</td><td class="n">455</td></tr>
+      <tr class="tot"><td>Nodes</td><td class="n">525</td></tr>
+    </table>
+    <h3>Limits</h3>
+    <ul>
+      <li>Links are at document level; the Approved Document paragraphs and the regulations inside each instrument are not separate dots yet.</li>
+      <li>The 2026 editions of AD L (both volumes) and AD F Volume 1 (approved by Circular 01/2026 and revised by Circular 04/2026; they take effect on 24 Mar 2027, or 24 Sep 2027 for higher-risk building work) are not shown. AD B is shown as published in 2026, which already prints the changes that take effect on 2 Sep 2029.</li>
+      <li>Quotes come from machine-extracted PDF text and were spot-checked against the PDFs. Line breaks, hyphens and two-column layouts can still garble a word.</li>
+      <li>Lines between pieces of legislation come from the text as made (introduction and operative provisions); Schedule 1, the Building Safety Act 2022 and the Fire Safety Act 2021 come from the revised text on legislation.gov.uk on the check date, which may not yet include every amendment.</li>
+      <li>Earlier amending regulations are not separate dots, because their changes are already in the revised Building Regulations 2010 and its Schedule 1 shown here: SI 2021/1391 (the 2021 Parts L, F and O, in force 15 Jun 2022; its regulation 17 is the transitional provision for them (paragraph (1) as substituted by SI 2023/520); SI 2026/335 regulation 10 omits regulation 17(1)(a) from 24 Mar 2027, subject to savings), SI 2021/1392 (Part S), SI 2022/603 (regulation 7(1A) and the hotels, hostels and boarding houses added to regulation 7(2), 1 Dec 2022), SI 2022/984 (Part R, RA1 and RA2, 26 Dec 2022), SI 2023/520 (corrections to SI 2021/1391 and SI 2022/603) and SI 2024/645 (Part T, 1 Oct 2024). Their commencement and transitional rules are in each instrument on legislation.gov.uk. The amending regulations that are dots are those that bring in the 2023 building safety regime or change it later (for example SI 2023/911, SI 2025/1017 and SI 2026/1034), and SI 2026/335, which is not yet in force. One later amending instrument is not a dot: SI 2026/1094, mainly about local authority charges (see Not in the map).</li>
+      <li>Not in the map: the Building Safety Act commencement regulations (for example SI 2023/993); the Building (Local Authority Charges and Amendments Relating to Charging) (England) Regulations 2026 (SI 2026/1094, in force 6 Nov 2026; it replaces the Building (Local Authority Charges) Regulations 2010 in England. Its regulation 11 is not about charges: it revokes the Building (Amendment) Regulations 2013 in England and substitutes regulation 11(3) of the Building Regulations 2010, which then bars relaxation under section 8 of the Building Act 1984 only for regulation 23(1)(a) and paragraph R1 of Schedule 1; regulation 11 comes into force on 24 Mar 2027, or 24 Sep 2027 in relation to higher-risk buildings); the Responsible Actors Scheme and its building control prohibition (SI 2023/753); the Building Safety Act's remediation and leaseholder protection provisions; the planning Gateway 1 fire statement rules; directions under section 11 of the Building Act 1984 that dispense with procedural requirements (for example Circulars 02/2026 and 03/2026, for telecommunications work); the construction products regime; the Manual to the Building Regulations; and other guidance that the Approved Documents point to.</li>
+    </ul>
+    <h3>Licence and attribution</h3>
+    <p>Contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">Open Government Licence v3.0</a>. Legislation: Crown copyright and database right, from <a href="https://www.legislation.gov.uk/" target="_blank" rel="noopener">legislation.gov.uk</a>. Approved Documents © Crown copyright, from <a href="https://www.gov.uk/government/collections/approved-documents" target="_blank" rel="noopener">GOV.UK</a>; each panel names the title and edition. HSE L153 © Crown copyright, from <a href="https://www.hse.gov.uk/pubns/books/l153.htm" target="_blank" rel="noopener">HSE</a>. British Standards are published by <a href="https://www.bsigroup.com/" target="_blank" rel="noopener">BSI</a>.</p>
+    <div class="cred"><span class="wm">AW<i></i>DESIGN</span><span>AW Design · Anzon Wong</span></div>
+  </div>
+</div>
+
+<script src="data.js?v=20261109v3"></script>
+<script src="layout.js?v=20261109v3"></script>
+<script src="app.js?v=20261109v3"></script>
+<script src="counter.js?v=20261109v3"></script>
+<script>(function(){var f=document.querySelector(".foot"),r=document.documentElement;if(!f||!window.ResizeObserver)return;new ResizeObserver(function(){r.style.setProperty("--foot",Math.ceil(f.getBoundingClientRect().height)+"px")}).observe(f)})();</script>
+<script>(function(){ /* QA r2 C2-04 / C2-05: keyboard paths */
+var $=function(i){return document.getElementById(i)};
+var ok=$('noticex'); if(ok) ok.addEventListener('click',function(){setTimeout(function(){var t=document.querySelector('.ttl'); if(t) t.focus({preventScroll:true});},0);});
+var ab=$('about'); if(ab) ab.addEventListener('keydown',function(e){ if(e.key!=='Tab') return; var f=[].slice.call(ab.querySelectorAll('a[href],button:not([disabled]),input,select,[tabindex]:not([tabindex="-1"])')).filter(function(x){return x.offsetParent!==null;}); if(!f.length) return;
+  var a=f[0], z=f[f.length-1]; if(e.shiftKey && document.activeElement===a){e.preventDefault(); z.focus();} else if(!e.shiftKey && document.activeElement===z){e.preventDefault(); a.focus();} });
+/* QA r3 C3-01: r2 made the whole li a role=button around the Quote button, and Enter clicked the li, which the handler on li > .m never saw.
+   Now the row name (li > .m > .c) is the button; its click bubbles to .m, so Enter/Space open the row like a mouse click. */
+var pb=$('pbody'); if(pb && window.MutationObserver){ var mark=function(){ [].forEach.call(pb.querySelectorAll('li[data-i] > .m > .c,a[data-i]:not([href])'),function(x){ if(!x.hasAttribute('tabindex')){x.setAttribute('tabindex','0'); if(x.tagName==='A'){x.setAttribute('role','link');} else {x.setAttribute('role','button'); var n=x.parentNode.querySelector('.n'); x.setAttribute('aria-label','Open '+x.textContent+(n&&n.textContent?': '+n.textContent:''));}} }); };
+  new MutationObserver(mark).observe(pb,{childList:true,subtree:true}); mark();
+  pb.addEventListener('keydown',function(e){ var t=e.target; if((e.key==='Enter'||e.key===' ') && t.matches && t.matches('li[data-i] > .m > .c,a[data-i]:not([href])')){ e.preventDefault(); t.click(); } }); }
+/* QA r3 C3-07: the header search box is 91 to 173 px wide between 769 and 1023 px, too narrow for the full placeholder */
+var q=$('q'); if(q && window.matchMedia){ var full=q.getAttribute('placeholder'), mq=window.matchMedia('(min-width:769px) and (max-width:1023px)'); var ph=function(){ q.setAttribute('placeholder', mq.matches ? 'Search…' : full); }; ph(); if(mq.addEventListener) mq.addEventListener('change',ph); else if(mq.addListener) mq.addListener(ph); }
+})();</script>
+</body>
+</html>
