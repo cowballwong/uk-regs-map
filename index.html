@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="An interactive map of the building regulations system in England: Acts, regulations, Approved Documents and the British Standards they cite, with the quoted links between them. A personal hobby project by AW Design, not an official website.">
+<meta name="description" content="Edition check and spec check for the British Standards the Approved Documents cite. An interactive map of the building regulations system in England: Acts, regulations, Approved Documents and the British Standards they cite, with the quoted links between them. A personal hobby project by AW Design, not an official website.">
 <link rel="canonical" href="https://anzonwong.com/uk-regs-map/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="UK Building Regulations Map (England)">
-<meta property="og:description" content="An interactive map of the building regulations system in England: Acts, regulations, Approved Documents and the British Standards they cite, with the quoted links between them. A personal hobby project by AW Design, not an official website.">
+<meta property="og:description" content="Edition check and spec check for the British Standards the Approved Documents cite. An interactive map of the building regulations system in England: Acts, regulations, Approved Documents and the British Standards they cite, with the quoted links between them. A personal hobby project by AW Design, not an official website.">
 <meta property="og:url" content="https://anzonwong.com/uk-regs-map/">
 <meta name="color-scheme" content="only light">
-<meta name="theme-color" content="#f5ede4">
+<meta name="theme-color" content="#070a10">
+<meta name="color-scheme" content="dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23f5ede4%22/%3E%3Cpath d=%22M8 22L16 9L24 20M8 22L24 20%22 stroke=%22%235a4c40%22 stroke-width=%221.6%22 fill=%22none%22/%3E%3Ccircle cx=%228%22 cy=%2222%22 r=%223.2%22 fill=%22%235a4c40%22/%3E%3Ccircle cx=%2216%22 cy=%229%22 r=%223.6%22 fill=%22%23c4763c%22/%3E%3Ccircle cx=%2224%22 cy=%2220%22 r=%222.8%22 fill=%22%230072b2%22/%3E%3C/svg%3E">
 <meta property="og:image" content="https://anzonwong.com/uk-regs-map/og.png">
 <meta property="og:image:width" content="1200">
@@ -470,15 +471,513 @@ body.panel-open.panel-col .zoombar{right:18px}
 .search input::placeholder{color:#76604a}
 .ttl .t-sub{font-size:11px;letter-spacing:.08em;color:var(--muted)}
 .ttl:focus{outline:none}
+
+/* ===== v2 (10 Nov 2026) ===== */
+/* bigger title in the header */
+.ttl{cursor:pointer}
+.ttl .t-en:first-child{font-style:normal!important;font-size:18px!important;font-weight:bold;color:var(--ink)!important;letter-spacing:.01em}
+@media (min-width:769px) and (max-width:1100px){.ttl .t-en:first-child{font-size:15px!important}}
+@media (max-width:768px){.ttl .t-en:first-child{display:block!important;font-size:15px!important;white-space:nowrap}.ttl .t-sub{display:block!important;font-size:9.5px}}
+/* hero: the start panel, over the top of the map */
+#hero{position:fixed;z-index:32;top:calc(var(--top) + 16px);left:16px;width:clamp(340px,31vw,460px);max-height:calc(100% - var(--top) - var(--foot) - 32px);overflow:auto;background:rgba(255,253,249,.97);border:1px solid var(--rule);border-top:4px solid var(--terrat);box-shadow:0 18px 50px rgba(26,20,16,.14);padding:16px 20px 14px;box-sizing:border-box}
+#hero:focus{outline:none}#hero:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ttl:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+#hero[hidden]{display:none}
+#hero h1{margin:0 30px 6px 0;font-weight:bold;font-size:26px;line-height:1.15;letter-spacing:.005em;color:var(--ink)}
+#hero .hs{margin:0 0 12px;font-size:15px;line-height:1.45;color:var(--ink2)}
+#hero .x{position:absolute;right:8px;top:8px;width:40px;height:40px;border:0;background:none;font-size:26px;line-height:1;cursor:pointer;color:var(--muted)}
+#hero .x:hover{color:var(--ink)}
+#hero .x:focus-visible,#hero button:focus-visible,#tools button:focus-visible,#spec button:focus-visible,#spec textarea:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+#hero .slot .search{position:relative!important;left:auto!important;right:auto!important;top:auto!important;max-width:none!important;width:100%;margin:0;flex:none;z-index:2}
+#hero .slot .search input{height:54px;font-size:18px;padding-left:46px;border-width:2px}
+#hero .slot .search .si{top:18px;left:16px}
+#hero .slot .search .qk{top:16px}
+#hero .slot .search ul{top:60px;left:0;width:100%;max-width:none;max-height:min(360px,calc(100vh - 260px))}
+#hero .hrow{display:flex;align-items:center;gap:10px;margin-top:12px}
+#hero .hl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);flex:none}
+#hero .hchips{display:flex;flex-wrap:wrap;gap:6px}
+#hero .chip{border:1px solid var(--terrat);background:var(--paper);color:var(--terrat);font:14px var(--serif);padding:6px 12px;border-radius:16px;cursor:pointer;min-height:32px}
+#hero .chip:hover{background:var(--terrat);color:#fffdf9}
+#hero .hub{margin:10px 0 0;font-size:13px;color:var(--ink2);display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+#hero .hubb{border:0;border-bottom:1px solid var(--terrat);background:none;padding:2px 0;min-height:26px;font:bold 13px var(--serif);color:var(--ink);cursor:pointer}
+#hero .hubb span{font-weight:normal;color:var(--muted)}
+#hero .acts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+#hero .acts button{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--rule);background:var(--cream);padding:9px 14px;cursor:pointer;font:14px var(--serif);color:var(--ink);min-height:48px}
+#hero .acts button small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+#hero .acts .altb{flex:1 1 100%;border-color:var(--rule);border-left:4px solid #b0231c;background:var(--cream);position:relative}
+#hero .acts .altb b{color:var(--ink)}
+#hero .acts .altb .sh{display:none}
+.onx{display:none}
+#hero .acts .altb[aria-pressed="true"]{background:#f3e3d8;border-color:var(--ink2)}
+#hero .acts .altb[aria-pressed="true"] .onx{display:inline;margin-left:auto;font-size:12px;font-weight:bold}
+#hero .acts .specb{flex:1 1 100%;flex-direction:row;align-items:baseline;gap:8px}
+#hero .acts button:hover{border-color:var(--ink)}
+.altb .dot,#alttop .dot{flex:none;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 50%,#b0231c 0 45%,transparent 46%),radial-gradient(circle at 75% 50%,#7b3f98 0 32%,transparent 33%);box-shadow:0 0 0 2px #fffdf9}
+body.hero-on #tools{display:none}
+body.hero-on #side{display:none}
+body.hero-on #linesbox{display:none}
+/* the tools pill (alert + spec) once the hero is closed */
+#tools{position:fixed;z-index:20;top:calc(var(--top) + 14px);right:16px;display:flex;gap:6px;transition:right .35s}
+#tools button{display:flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--rule);background:rgba(255,253,249,.96);font:13px var(--serif);color:var(--ink);cursor:pointer;box-shadow:0 4px 14px rgba(26,20,16,.08);white-space:nowrap}
+#tools #alttop{border-color:var(--rule);border-left:4px solid #b0231c;color:var(--ink)}
+#tools #alttop[aria-pressed="true"]{background:var(--ink);color:#fffdf9;border-color:var(--ink)}
+#tools #alttop[aria-pressed="true"] .onx{display:inline}
+#tools #alttop[aria-pressed="true"] .dot{background:#fffdf9;box-shadow:none}
+#tools button:hover{border-color:var(--ink)}
+@media (min-width:769px){body.panel-open:not(.panel-col) #tools{right:490px}}
+/* the desktop lines key folds away while a panel is open, so the burst has the room */
+@media (min-width:769px){body.panel-open #linesbox{display:none}}
+/* alert mode: the 52 pulse (canvas size, see app.js); the reduced-motion setting keeps them still */
+#panel .v2n{font-size:12.5px;line-height:1.5;color:var(--ink2);margin:0 0 6px}
+#panel .v2n a{color:var(--ink);cursor:pointer;border-bottom:1px dotted #8b7355}
+#panel .v2b{margin:6px 0 10px}
+#panel .v2btn{border:1px solid var(--terrat);background:var(--paper);color:var(--terrat);font:13px var(--serif);padding:6px 12px;cursor:pointer}
+#panel .v2btn:hover{background:var(--terrat);color:#fffdf9}
+#panel .v2btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+#panel .altc{margin:0 0 12px;padding:8px 0 4px;border-bottom:1px solid var(--rule);font-size:13px;line-height:1.5}
+#panel .altc .altst{font-size:12px;color:var(--ink2)}
+#panel li.altr .r{color:var(--ink2)}
+#panel .edr{border:1px solid var(--rule);border-left:4px solid var(--terrat);background:var(--cream);padding:8px 12px;margin:0 0 12px;font-size:13px;line-height:1.5}
+#panel .edr p{margin:4px 0 0}
+#panel .edr q{font-style:italic}
+/* spec check dialog */
+#spec{position:fixed;inset:0;z-index:62;display:flex;align-items:center;justify-content:center;background:rgba(26,20,16,.38);padding:calc(16px + var(--sat)) 16px calc(16px + var(--sab))}
+#spec[hidden]{display:none}
+#spec .box{position:relative;background:#fffdf9;color:#1a1410;border:1px solid #e3d6c6;border-top:4px solid var(--terrat);box-shadow:0 24px 70px rgba(26,20,16,.28);width:100%;max-width:1040px;max-height:100%;overflow:auto;overscroll-behavior:contain;padding:26px 32px 24px;box-sizing:border-box}
+#spec .x{position:absolute;right:10px;top:10px;width:40px;height:40px;border:0;background:none;font-size:26px;cursor:pointer;color:#76604a}
+#spec .kick{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#76604a}
+#spec h2{margin:6px 40px 8px 0;font-weight:normal;font-size:24px;line-height:1.25}
+#spec .lead{margin:0 0 10px;font-size:14.5px;line-height:1.55}
+#spec .disc{border:1px solid #c4763c;background:#fbf3ea;padding:10px 14px;margin:0 0 14px;font-size:13.5px;line-height:1.5}
+#spec .disc b{display:block;color:#8a4a1c}
+#spec .disc p{margin:3px 0 0}
+#spec .lab{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#76604a;margin-bottom:4px}
+#spec textarea{width:100%;box-sizing:border-box;min-height:110px;border:1.5px solid var(--terra);background:#fff;font:15px/1.5 var(--serif);padding:10px 12px;resize:vertical;color:var(--ink)}
+#spec .srow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 6px}
+#spec .srow button{height:38px;padding:0 16px;border:1px solid var(--terrat);background:var(--paper);color:var(--terrat);font:14px var(--serif);cursor:pointer}
+#spec .srow button.pri{background:var(--terrat);color:#fffdf9}
+#spec .srow button[disabled]{opacity:.5;cursor:default}
+#specsum{margin:8px 0 10px;font-size:14px;line-height:1.5;color:var(--ink)}
+#spec .stw{overflow-x:auto}
+#spec .stab{border-collapse:collapse;width:100%;font-size:13px;line-height:1.45}
+#spec .stab th{text-align:left;font-weight:normal;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#76604a;border-bottom:1px solid #e3d6c6;padding:6px 8px 6px 0}
+#spec .stab td{vertical-align:top;border-bottom:1px solid #efe4d6;padding:8px 10px 8px 0;color:#1a1410}
+#spec .stab small{font-size:12px;color:#5d4c3d}
+#spec .stab a{color:var(--terrat)}
+#spec .sgo{border:0;border-bottom:1px solid var(--terrat);background:none;padding:0;font:bold 13px var(--serif);color:var(--ink);cursor:pointer;margin:0 4px 2px 0}
+#spec .sst{display:inline-block;border-left:4px solid #8f877b;padding-left:6px}
+#spec .sst.none{border-color:#e3d6c6;color:#5d4c3d}
+#spec .stab small.sd{display:inline-block;margin-top:3px;color:#1a1410}
+#spec .stab small.sd.amendment{border-left:3px solid #6b5500;padding-left:5px}
+#spec .stab small.sd.edition{border-left:3px solid #b0231c;padding-left:5px}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:640px){
+  #spec{padding:calc(8px + var(--sat)) 8px calc(8px + var(--sab));align-items:stretch}
+  #spec .box{padding:20px 16px 16px}
+  #spec h2{font-size:20px}
+  #spec .stab thead{display:none}
+  #spec .stab,#spec .stab tbody,#spec .stab tr,#spec .stab td{display:block;width:auto}
+  #spec .stab tr{border:1px solid #e3d6c6;margin:0 0 10px;padding:6px 10px}
+  #spec .stab td{border:0;padding:3px 0}
+  #spec .stab td::before{content:attr(data-l);display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#76604a}
+}
+/* phones: the panel stays compact so the map keeps the lower half */
+@media (max-width:768px){
+  #hero{top:calc(var(--top) + 6px);left:12px;width:calc(100% - 24px);max-height:none;overflow:visible;padding:10px 12px 10px;border-top-width:3px}
+  #hero h1{font-size:19px;margin:0 34px 2px 0}
+  #hero .hs{font-size:13px;line-height:1.4;margin-bottom:8px}
+  #hero .x{top:2px;right:2px}
+  #hero .slot .search input{height:46px;font-size:16px}
+  #hero .slot .search .si{top:14px}
+  #hero .slot .search ul{top:52px;max-height:min(300px,calc(100vh - 220px))}
+  #hero .hrow{margin-top:8px}
+  #hero .hl{display:none}
+  #hero .hchips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:28px}
+  #hero .hchips::-webkit-scrollbar{display:none}
+  #hero .chip{font-size:13px;padding:4px 10px;min-height:32px;white-space:nowrap;flex:none}
+  #hero .hub{display:none}
+  #hero .acts{margin-top:8px;gap:6px;flex-wrap:nowrap}
+  #hero .acts button{padding:6px 9px;font-size:12.5px;min-height:44px;line-height:1.3}
+  #hero .acts .altb{flex:1 1 auto}
+  #hero .acts .altb .lg,#hero .acts .specb small{display:none}
+  #hero .acts .altb .sh{display:block}
+  body.panel-open #notice{display:none}
+
+  #hero .acts .specb{flex:0 0 auto;align-items:center}
+  body.hero-on #mode{display:none}
+  body.hero-on #side{display:block}
+  #tools{top:calc(var(--top) + 64px);right:16px}
+  #tools button{height:32px;padding:0 9px;font-size:12px}
+  body.panel-open #tools{display:none}
+}
+@media (max-width:420px){.top .wm{display:none}}
+@media (max-width:480px){#tools{top:calc(var(--top) + 100px)}}
+#tools .s{display:none}
+@media (max-width:768px){#tools #spectop .l{display:none}#tools #spectop .s{display:inline}}
+
+
+@media (max-width:380px){#hero h1{font-size:17px}}
+/* QA v2-R1: the notice is a slim banner, not a modal; the map is the first thing to use */
+#notice{position:fixed;inset:auto;left:50%;transform:translateX(-50%);bottom:calc(var(--foot) + 14px);z-index:40;display:flex;align-items:center;gap:12px;width:max-content;max-width:min(760px,calc(100% - 24px));background:rgba(255,253,249,.97);border:1px solid var(--rule);border-left:4px solid var(--terrat);padding:6px 8px 6px 12px;box-shadow:0 8px 24px rgba(26,20,16,.12);box-sizing:border-box;justify-content:flex-start}
+#notice[hidden]{display:none}
+#notice p{margin:0;font-size:13px;line-height:1.4;color:var(--ink)}
+#notice .nlink{border:0;background:none;padding:0;color:var(--terrat);text-decoration:underline;font:inherit;cursor:pointer;min-height:0}
+#notice #noticex{flex:none;padding:5px 16px;min-height:32px}
+@media (max-width:768px){#notice{width:auto;left:12px;right:68px;transform:none;max-width:none;bottom:calc(var(--foot) + 64px)}#notice p{font-size:12.5px}}
+/* fly-to caption */
+#burstcap{position:fixed;z-index:21;top:calc(var(--top) + 14px);left:50%;transform:translate(-50%,-6px);max-width:min(560px,calc(100% - 32px));background:rgba(26,20,16,.86);color:#fffdf9;font:15px var(--serif);padding:7px 14px;pointer-events:none;opacity:0;transition:opacity .35s,transform .35s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#burstcap.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:768px){#burstcap{top:calc(var(--top) + 62px);font-size:13px;z-index:45}}
+#pcode:focus{outline:none}
+@media (prefers-reduced-motion:reduce){#burstcap{transition:none}}
+/* QA v2-R1 V1C-08: 769-1100 px, a panel open: the pill sits under the folded legend bar, not on it */
+@media (min-width:769px) and (max-width:1100px){body.panel-open:not(.panel-col) #tools{right:auto;left:16px;top:calc(var(--top) + 62px)}}
+
+/* ===== QA v2-R2 fixes ===== */
+/* V2C-02: the map canvas is transparent and drawn above the HTML labels, so status dots are never hidden under a label card */
+#stage{z-index:6;background:transparent!important}
+#labels{z-index:5}
+/* V2C-04: on desktop the banner sits in the band between the start panel and the zoom bar, never over either */
+@media (min-width:769px){#notice{left:calc(32px + clamp(340px,31vw,460px));right:76px;transform:none;width:fit-content;max-width:none;margin:0 auto}}
+@media (min-width:769px) and (max-width:1100px){#notice{flex-wrap:wrap;gap:6px 10px}#notice p{font-size:12.5px}}
+/* V2C-05: on phones the caption sits below the Type / Domain / Subject buttons */
+@media (max-width:768px){#burstcap{top:calc(var(--top) + 112px)}}
+/* V2C-11: the landing ring on the dot the camera flew to */
+#landring{position:fixed;left:-99px;top:-99px;width:0;height:0;z-index:7;pointer-events:none}
+#landring i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:2.5px solid #1a1410;opacity:0}
+#landring.go i{animation:landr 1.5s cubic-bezier(.2,.7,.3,1) forwards}
+#landring.go i+i{animation-delay:.35s}
+@keyframes landr{0%{transform:scale(.4);opacity:.95}70%{opacity:.5}100%{transform:scale(2.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){#landring.go i{animation:landrs 1.6s steps(1) forwards}#landring.go i+i{display:none}@keyframes landrs{0%{opacity:.9;transform:scale(1.2)}100%{opacity:0}}}
+
+.lb span.en{font-family:var(--serif);font-style:italic;color:#5d4c3d}
+
+/* ===== v3 (10 Nov 2026): full-text reader, search, drill-down; QA v2-R3 C fixes ===== */
+/* the reader widens the panel on wide screens; the map is framed in what is left */
+@media (min-width:1200px){#panel.ftr{width:min(720px,50vw)}body.ftr-on.panel-open:not(.panel-col) #tools{right:calc(min(720px,50vw) + 70px)}}
+#panel.ftr .bd{padding-top:0}
+.ftload{margin:24px 0;color:var(--muted);font-size:14px}
+/* full-text card in a node panel */
+.ftc{margin:16px 0 6px;padding:12px 14px;border:1px solid var(--rule);border-left:4px solid var(--ink);background:var(--paper)}
+.ftc .ftck{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.ftc p{margin:4px 0;font-size:13px;line-height:1.45;color:var(--ink2)}
+.ftcb{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px!important}
+.v2btn.pri{background:var(--terrat);color:#fffdf9}.v2btn.pri:hover{background:var(--ink);border-color:var(--ink)}
+.ftreq{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:2px}
+.ftreq button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--rule);background:none;padding:6px 2px;font:13px var(--serif);color:var(--ink);cursor:pointer;min-height:32px}
+.ftreq button b{display:inline-block;min-width:3.4em;color:var(--terrat)}
+.ftreq button:hover{background:var(--cream)}
+.ftreq button:focus-visible,.ftl:focus-visible,.rdq:focus-visible,.frr:focus-visible,.ftoc button:focus-visible,.ftf input:focus-visible,.ftf select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* "read it in context" on a quote */
+.rdq{display:inline-block;margin-top:6px;border:0;border-bottom:1px solid var(--terrat);background:none;padding:2px 0;font:12.5px var(--serif);color:var(--terrat);cursor:pointer;min-height:24px}
+.rdq:hover{color:var(--ink);border-color:var(--ink)}
+.ftl{border:0;border-bottom:1px solid var(--terrat);background:none;padding:2px 0;font:12.5px var(--serif);color:var(--terrat);cursor:pointer;text-align:left;min-height:24px}
+.ftl:hover{color:var(--ink)}
+/* reader chrome */
+.fbar{position:sticky;top:0;z-index:3;display:flex;flex-wrap:wrap;gap:6px;padding:8px 0;margin:0 0 6px;background:var(--paper);border-bottom:1px solid var(--rule)}
+.fsrc{margin:12px 0 10px;padding:10px 12px;background:var(--cream);border-left:4px solid var(--ink);font-size:12.5px;line-height:1.45;color:var(--ink2)}
+.fsrc:focus{outline:none}.fsrc:focus-visible{outline:2px solid var(--ink)}
+.fsrc .fsk{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.fsrc>b{display:block;font-size:15px;color:var(--ink);margin:2px 0}
+.fsrc .fse{display:block;color:var(--muted)}
+.fsrc p{margin:6px 0 0}
+.fsrc a{color:var(--terrat)}
+.fwarn{font-size:12px;color:var(--muted)}
+.fgo{margin:6px 0 4px;font-size:12.5px}
+.ftoc{margin:0 0 10px;padding:6px 10px;border:1px solid var(--rule);max-height:48vh;overflow:auto;background:var(--paper)}
+.ftoc ol{list-style:none;margin:0;padding:0}
+.ftoc li{display:flex;gap:8px;align-items:baseline;font-size:12.5px;line-height:1.35;padding:2px 0}
+.ftoc li.l2{padding-left:14px}
+.ftoc li span{margin-left:auto;color:var(--muted);font-size:11px;flex:none}
+.ftoc button{border:0;background:none;padding:3px 0;text-align:left;font:12.5px var(--serif);color:var(--ink);cursor:pointer;min-height:24px}
+.ftoc button:hover{color:var(--terrat);text-decoration:underline}
+/* the text */
+.fart{font-size:14px;line-height:1.55;color:var(--ink);overflow-wrap:anywhere}
+.fpb{margin:14px 0 4px;padding-top:4px;border-top:1px dashed var(--rule);font-size:11px;letter-spacing:.04em}
+.fpb a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}.fpb a:hover{border-color:var(--muted);color:var(--ink)}
+.fb{position:relative;padding:2px 52px 2px 0;scroll-margin-top:58px;content-visibility:auto;contain-intrinsic-size:auto 40px}
+.fb p{margin:4px 0}
+.fb .fpg{position:absolute;right:0;top:6px;font-size:10.5px;color:var(--muted);white-space:nowrap}
+.fb .fn{color:var(--terrat);margin-right:4px}
+#panel .fart h3,#panel .fart h4,#panel .fart h5,#panel .fart h6{margin:14px 0 4px;font-weight:bold;color:var(--ink);letter-spacing:0;text-transform:none;display:block;font-size:15px;line-height:1.3}
+#panel .fart h3{font-size:17px}#panel .fart h4{font-size:15.5px}#panel .fart h6{font-size:14px;font-style:italic}
+.fli{display:flex;gap:8px;padding-left:12px}.fli.l2{padding-left:30px}
+.fli .fm{flex:none;min-width:1.6em;color:var(--muted)}
+.fnote{padding:4px 10px;border-left:3px solid var(--rule);background:var(--cream);font-size:13px;color:var(--ink2)}
+.ftb,.fdg{margin:8px 0;padding:8px 10px;border:1px solid var(--rule);background:var(--paper)}
+.ftb figcaption,.fdg figcaption{font-weight:bold;font-size:13px;margin-bottom:4px}
+.fdg{border-style:dashed}
+.ftw{overflow-x:auto;max-width:100%}
+.ftw:focus-visible{outline:2px solid var(--ink)}
+.ftw table{border-collapse:collapse;font-size:12px;line-height:1.35;min-width:100%}
+.ftw td{border:1px solid var(--rule);padding:3px 6px;vertical-align:top}
+/* QA v2-R7a V7AC-04 / V7AT-08: cells break a word only when it cannot fit on a line of its own (the article's overflow-wrap:anywhere had made
+   the words' letters the table's minimum width, so 6-column tables were squeezed to the screen and split "Mini/mum", "Integri ty"); a wide
+   table now scrolls inside .ftw */
+.ftw td,.ftw th{overflow-wrap:break-word;word-break:normal}
+.ftl{display:inline}
+.ftb .ftl{display:block;font-size:12.5px;color:var(--ink2);border:0}
+.fsp{font-size:12px;color:var(--muted);margin:4px 0}
+.fsp a,.fart a{color:var(--terrat)}
+.ffx{display:block;margin:2px 0 4px;font-size:11.5px;color:var(--terrat);font-style:italic}
+.fb.fhit,.breg.fhit,.breq.fhit,.bpv.fhit,.bhd.fhit{background:#fbf1d9;box-shadow:-8px 0 0 #fbf1d9,0 0 0 1px #e9cf8f;animation:fhit 1.6s ease-out 1}
+@keyframes fhit{0%{background:#f6d98d}100%{background:#fbf1d9}}
+@media (prefers-reduced-motion:reduce){.fb.fhit,.breg.fhit,.breq.fhit,.bpv.fhit,.bhd.fhit{animation:none}}
+.fart mark{background:#f6d98d;color:inherit;padding:0 1px}
+.fart mark.fq{background:#f3c66a;box-shadow:0 0 0 2px #f3c66a}
+.fb:focus,.breg:focus,.breq:focus,.bpv:focus,.bhd:focus{outline:none}
+.fb:focus-visible,.breg:focus-visible,.breq:focus-visible,.bpv:focus-visible,.bhd:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* the Regulations */
+#panel .fbr .bhd h4{margin:20px 0 6px;font-size:15px;text-transform:none}
+#panel .fbr .bh-schedule h4,#panel .fbr .bh-part h4{font-size:17px;border-bottom:2px solid var(--ink);padding-bottom:3px}
+.fbr .brn{color:var(--terrat);margin-right:6px}
+.fbr .breg,.fbr .breq{margin:12px 0;padding:8px 0 4px;border-top:1px solid var(--rule);scroll-margin-top:58px}
+#panel .fbr .breg h5,#panel .fbr .breq h5{margin:0 0 4px;font-size:15px;font-weight:bold;letter-spacing:0;text-transform:none;color:var(--ink);display:block}
+.fbr .bpv{scroll-margin-top:58px}
+.fbr .bl{margin:4px 0;padding-left:calc(var(--d,0) * 14px)}
+.fbr .bl b{color:var(--terrat)}
+.fbr .brq{margin:6px 0;padding:6px 10px;background:var(--cream);border-left:3px solid var(--ink)}
+.fbr .brq.lim{border-left-color:var(--muted)}
+.fbr .brk{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.fbr .bgd{margin:8px 0;padding:6px 10px;border:1px solid var(--rule);display:flex;flex-direction:column;gap:4px;align-items:flex-start;font-size:12.5px}
+.fbr .bgd b{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:normal}
+.fbr .bref{margin:0 0 6px;color:var(--muted);font-size:12px;font-style:italic}
+.fbr .bst{display:inline-block;font-size:11px;font-weight:normal;padding:0 6px;border:1px solid var(--muted);color:var(--muted)}
+.fbr .bmeta{margin:2px 0;font-size:11.5px}
+.fbr .blg{color:var(--terrat)}
+.beff{margin:6px 0;padding:6px 10px;border:1px solid #b0231c;border-left-width:4px;background:#fdf3f0;font-size:12.5px;line-height:1.45}
+.beff b{color:#8c1a14}
+.beff ul{margin:4px 0 0 18px;padding:0}
+.bwl{margin:4px 0;font-size:12px;color:var(--muted);font-style:italic}
+.bnotes{margin:4px 0;font-size:12px;color:var(--ink2)}
+.bnotes summary{cursor:pointer;color:var(--muted);min-height:24px}
+.bnotes summary:focus-visible{outline:2px solid var(--ink)}
+.bnotes ul{margin:4px 0 0 18px;padding:0}
+/* search */
+.ftf{margin:14px 0 6px}
+.ftf>label{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.ftfr{display:flex;gap:6px}
+.ftf input{flex:1;min-width:0;height:40px;border:2px solid var(--ink2);padding:0 10px;font:15px var(--serif);background:#fff;color:var(--ink)}
+.ftf select{margin-top:6px;max-width:100%;height:34px;border:1px solid var(--rule);background:var(--paper);font:13px var(--serif);color:var(--ink)}
+.ftst{font-size:12.5px;color:var(--ink2);margin:6px 0}
+.ftst:focus{outline:none}
+.ftex{display:flex;flex-wrap:wrap;gap:6px}
+.ftex .chip{border:1px solid var(--terrat);background:var(--paper);color:var(--terrat);font:13px var(--serif);padding:4px 10px;border-radius:14px;cursor:pointer;min-height:30px}
+.ftex .chip:hover{background:var(--terrat);color:#fffdf9}
+#panel .frg h5{margin:16px 0 4px}
+.frg ul{list-style:none;margin:0;padding:0}
+.frr{display:grid;grid-template-columns:auto 1fr auto;gap:0 8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--rule);background:none;padding:7px 2px;font:13px var(--serif);color:var(--ink);cursor:pointer}
+.frr:hover{background:var(--cream)}
+.frr .frd{grid-column:1/-1;font-size:11px;color:var(--muted)}
+.frr .frn{font-weight:bold;color:var(--terrat)}
+.frr .frc{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frr .frp{color:var(--muted);font-size:11px;white-space:nowrap}
+.frr .frs{grid-column:1/-1;font-size:12.5px;line-height:1.45;color:var(--ink2);overflow-wrap:anywhere}
+.frr mark{background:#f6d98d;color:inherit}
+.ftsug .c{font-weight:bold}
+/* start panel: full text first */
+#hero .acts .ftb{flex:1 1 100%;border-left:4px solid var(--ink);flex-direction:column;align-items:flex-start;gap:0}
+#tools #fttop .s{display:none}
+@media (max-width:768px){#tools #fttop .l{display:none}#tools #fttop .s{display:inline}#hero .acts .ftb small{display:none}#hero .acts .ftb{flex:1 1 100%;min-height:40px}#hero .acts{flex-wrap:wrap}#hero .acts .altb{flex:1 1 60%}}
+/* QA v2-R3 V3C-06: on short desktop screens the start panel's actions fit inside it */
+@media (min-width:769px) and (max-height:900px){#hero{padding:12px 16px 10px}#hero h1{font-size:22px}#hero .hs{font-size:13.5px;line-height:1.4;margin-bottom:8px}#hero .slot .search input{height:46px;font-size:16px}#hero .slot .search .si{top:14px}#hero .hrow{margin-top:8px}#hero .hub{margin-top:6px}#hero .acts{margin-top:8px;gap:6px}#hero .acts button{min-height:40px;padding:6px 12px}#hero .acts .altb .lg{display:none}#hero .acts .altb .sh{display:block}#hero .acts .specb,#hero .acts .ftb{flex:1 1 calc(50% - 3px)}#hero .acts .specb small,#hero .acts .ftb small{display:none}}
+@media (min-width:769px) and (max-height:820px){#hero .hub{display:none}#hero h1{font-size:20px;margin-bottom:4px}#hero .hs{font-size:13px;margin-bottom:6px}#hero .slot .search input{height:42px}#hero .hrow{margin-top:6px}#hero .chip{min-height:28px;padding:3px 10px;font-size:13px}#hero .acts button{min-height:36px}}
+/* QA v2-R3 V3C-07: on phones the six chips wrap onto two rows instead of running off the panel */
+@media (max-width:768px){#hero .hchips{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none;padding-right:0;gap:5px}#hero .chip{font-size:12.5px;padding:3px 9px;min-height:30px}}
+/* QA v2-R3 V3C-02: labels are drawn above the map again, without a plate, with a cream halo round the letters:
+   a label never has dots or lines drawn over its text, and a dot under a label stays visible between the letters (no washed-out card) */
+#labels{z-index:7}
+.lb{background:transparent;box-shadow:none;text-shadow:0 0 1px #fffdf9,0 0 2px #fffdf9,0 0 3px #fffdf9,0 0 4px #fffdf9,0 0 6px rgba(255,253,249,.9)}
+.lb.sel,.lb.pvl{text-shadow:none}
+.lb.sel{box-shadow:0 2px 8px rgba(26,20,16,.25)}
+#landring{z-index:8}
+/* QA v2-R4 */
+.fb,.fbr .breg,.fbr .breq,.fbr .bpv{scroll-margin-top:var(--fbarh,58px)}
+.fb.fhit2{background:#fbf1d9;box-shadow:-8px 0 0 #fbf1d9}
+.fpb .frh{margin-left:10px;font-size:10.5px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.f29c,.f29u{display:inline-block;margin-left:10px;padding:1px 7px;border-radius:9px;font-size:10.5px;letter-spacing:.02em;white-space:nowrap}
+.f29c{background:#efe1f3;color:#5b2a6e;border:1px solid #d9bde3}
+.f29u{background:#e6efe6;color:#28502c;border:1px solid #bcd3bd}
+.frr .f29c{margin:0 0 0 6px}
+.fb.f29{box-shadow:inset 3px 0 0 #d9bde3}
+.f29w b{color:#5b2a6e;font-weight:600}
+.bwx{font-size:11.5px;color:var(--muted);font-style:italic}
+@media (min-width:769px){#side{max-height:calc(100% - var(--top) - var(--foot) - var(--lbh,360px) - 48px)}}
+@media (min-width:1200px){body.ftr-on.panel-open:not(.panel-col) .zoombar{right:calc(min(720px,50vw) + 32px)}}
+
+
+/* ================= v4 dark theme (10 Nov 2026, Anzon's go): near-black map, glowing domains, flowing citations, a status bar and HUD panels.
+   The page tokens turn dark; the reader / node panel, the spec dialog and About stay a light "paper" sheet over the map (long text reads
+   better dark-on-light), so their tokens are set back to the light ones. Appended after every earlier rule, so it wins on equal specificity. */
+:root{
+  --bg:#070a10; --cream:#070a10; --paper:#0e131c; --ink:#e6edf5; --ink2:#c4cfdc; --muted:#9fb0c4; --rule:#263142; --soft:#152030;
+  --terra:#e0884a; --terrat:#f0a463; --acc:#ffc27a; --red:#ff6257;
+  --mono:ui-monospace,"SFMono-Regular","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sbh:22px; --top:calc(86px + var(--sat));
+  color-scheme:dark;
+}
+@media (max-width:768px){:root{--sbh:20px;--top:calc(76px + var(--sat))}}
+html,body{background:var(--bg);color:var(--ink)}
+#stage{background:var(--bg)}
+/* light "paper" islands */
+#panel,#spec,#about,.search ul,.tip{
+  --cream:#f5ede4; --paper:#fffdf9; --ink:#1a1410; --ink2:#4a3d33; --muted:#76604a; --rule:#e3d6c6; --soft:#efe4d6; --terra:#c4763c; --terrat:#97521f;
+  color-scheme:light; color:var(--ink)}
+#panel{border-color:#38465a;box-shadow:0 18px 60px rgba(0,0,0,.6),0 0 0 1px rgba(120,160,210,.12)}
+/* focus on dark */
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#panel :focus-visible,#spec :focus-visible,#about :focus-visible{outline-color:#1a1410}
+
+/* ---- status bar ---- */
+#sbar{position:fixed;left:0;right:0;top:0;height:calc(var(--sbh) + var(--sat));padding:var(--sat) max(14px,var(--sar)) 0 max(14px,var(--sal));z-index:31;display:flex;align-items:center;gap:0;
+  background:#04070c;border-bottom:1px solid #1b2636;font:11px/1 var(--mono);letter-spacing:.06em;color:#9fb0c4;white-space:nowrap;overflow:hidden;text-transform:uppercase}
+#sbar .sb-t{color:#ffc27a;margin-right:14px}
+#sbar .sb-i{padding:0 10px;border-left:1px solid #1f2b3c}
+#sbar .sb-i b{color:#e6edf5;font-weight:600}
+#sbar .sb-i.sb-r b{color:#ff8a80}
+#sbar .sb-i.sb-l b{color:#7fd1ff}
+#sbar .sb-sp{flex:1}
+#sbar .sb-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#45d483;margin-right:6px;vertical-align:1px;box-shadow:0 0 6px #45d483}
+#sbar button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:#e6edf5;background:#111a26;border:1px solid #2b3a50;height:calc(var(--sbh) - 6px);padding:0 8px;cursor:pointer}
+#sbar button[aria-expanded="true"]{border-color:#ffc27a;color:#ffc27a}
+.top{top:calc(var(--sbh) + var(--sat));height:calc(var(--top) - var(--sbh) - var(--sat));padding-top:0;background:#0b1018;border-bottom:1px solid #1b2636}
+@media (max-width:1100px){#sbar .sb-x1{display:none}}
+@media (max-width:768px){#sbar{font-size:10px;letter-spacing:.03em}#sbar .sb-t{margin-right:6px}#sbar .sb-i{padding:0 6px}#sbar .sb-x,#sbar .sb-x1,#sbar .sb-x2{display:none}#sbar button{flex:none}}
+
+/* ---- top bar, search, tools ---- */
+.top .ttl,.top .ttl *{color:var(--ink)}
+.seg{background:#0a0f17;border-color:var(--rule)}
+.seg button{color:var(--muted)}
+.seg button.on{background:#1a2535;color:var(--ink);box-shadow:none}
+.search input{background:#0a0f17;color:var(--ink);border-color:#3a4a60;box-shadow:none}
+.search input:focus{background:#0a0f17;border-color:var(--acc);box-shadow:0 0 0 3px rgba(255,194,122,.18)}
+.search input::placeholder{color:#8293a8}
+.search .qk{background:#121a26;border-color:#2b3a50;color:var(--muted)}
+#tools button{background:rgba(14,19,28,.94);border-color:#2b3a50;color:var(--ink);box-shadow:none}
+#tools #alttop[aria-pressed="true"]{background:#7a1c16;border-color:#ff6257;color:#fff}
+.altb .dot,#alttop .dot{background:#ff6257;box-shadow:0 0 0 2px #070a10,0 0 8px #ff6257}
+.abt{border-color:var(--rule);background:#0e131c;color:var(--ink)}
+
+/* ---- map overlays: labels, region names, captions ---- */
+.lb{background:transparent;box-shadow:none;text-shadow:0 0 1px #070a10,0 0 2px #070a10,0 0 3px #070a10,0 0 5px #070a10,0 0 8px rgba(7,10,16,.9)}
+.lb b{color:#eef3f9}
+.lb span,.lb span.en{color:#a9b9cc}
+.lb.sel{background:#eef3f9;box-shadow:0 0 14px rgba(160,200,255,.35);text-shadow:none}
+.lb.sel b{color:#070a10}
+.lb.sel span,.lb.sel span.en{color:#33415a}
+.lb.pvl,.zoombar #zrot.on{background:#a8501a;border-color:#a8501a}
+.lb.pvl b{color:#fff}.lb.pvl span{color:#ffe2c8}
+.cl{color:#91a3ba;text-shadow:0 0 2px #070a10,0 0 4px #070a10,0 0 7px #070a10,0 0 12px #070a10}
+.cl.sj{text-shadow:0 0 2px #070a10,0 0 3px #070a10,0 0 5px #070a10,0 0 9px #070a10,0 0 14px #070a10}
+.cl b{font-family:var(--mono);letter-spacing:.2em}
+#burstcap{background:rgba(9,14,22,.92);color:#eef3f9;border:1px solid #2b3a50;font-family:var(--mono);letter-spacing:.02em}
+#landring i{border-color:#ffc27a!important;box-shadow:0 0 10px rgba(255,194,122,.6)}
+.pvring{border-color:rgba(255,194,122,.85)!important;box-shadow:0 0 0 2px rgba(255,194,122,.3)}
+
+/* ---- legend, lines box, zoom bar, hero, banner, footer ---- */
+#side,#linesbox{background:rgba(10,15,23,.94);border-color:#243246;box-shadow:0 8px 26px rgba(0,0,0,.4);color:var(--ink)}
+#side h3,#side h4,#linesbox h4{font-family:var(--mono);color:#9fb0c4}
+#side select{background:#0a0f17;color:var(--ink);border-color:#2b3a50}
+.zoombar{background:#0e131c;border-color:#2b3a50}
+.zoombar button{color:var(--ink)}
+.zoombar #zrot{color:var(--muted)}
+.zoombar #zrot.on{color:#fff}
+#hero{background:rgba(10,15,23,.96);border-color:#2b3a50;box-shadow:0 18px 50px rgba(0,0,0,.5);color:var(--ink)}
+#hero .chip{background:#111a26;border-color:#2b3a50;color:var(--ink)}
+#hero .chip:hover{background:#1a2535}
+#hero .chip.dm{color:#fff}
+#notice{background:rgba(10,15,23,.97);border-color:#2b3a50;box-shadow:0 8px 30px rgba(0,0,0,.5);color:var(--ink)}
+#notice .nbox{background:#0e131c;border-color:#e0884a}
+#notice p.zh{color:var(--ink2)}
+#notice button{background:#e0884a;border-color:#e0884a;color:#10141b}
+.foot{background:#04070c;border-top-color:#1b2636;color:#9fb0c4;font-family:var(--mono);font-size:11px}
+.foot a{color:#c4d3e4}
+.v2btn{background:#111a26;border-color:#2b3a50;color:var(--ink)}
+.v2btn.pri{background:#f0a463;border-color:#f0a463;color:#10141b}
+#panel .v2btn,#spec .v2btn{background:#fffdf9;border-color:#e3d6c6;color:#1a1410}
+#panel .v2btn.pri,#spec .v2btn.pri{background:#97521f;border-color:#97521f;color:#fffdf9}
+#ppv{background:#0e131c;border-color:#2b3a50;color:var(--ink)}
+#ppv .pvo{background:#a8501a;color:#fff}
+.search li .tag.o{color:#76604a;border-color:#cbbfae}
+
+/* ---- HUD panels (desktop: a band above the footer that the map, legend and zoom bar sit above; phones: a sheet from the status bar) ---- */
+#hud{position:fixed;left:0;right:0;bottom:calc(36px + var(--sab));z-index:16;background:#05080d;border-top:1px solid #1b2636;font:11.5px/1.35 var(--mono);color:#c4cfdc}
+#hud .hud-g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:6px 12px 8px;height:100%;box-sizing:border-box}
+#hud .hp{min-width:0;display:flex;flex-direction:column;background:#0a111b;border:1px solid #1d2a3c;box-shadow:inset 0 0 18px rgba(80,140,220,.05)}
+#hud .hh{margin:0;display:flex;align-items:baseline;gap:8px;padding:4px 8px;font:600 10.5px/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#9fb0c4;border-bottom:1px solid #1a2636}
+#hud .hh b{margin-left:auto;color:#ffc27a;letter-spacing:.04em}
+#hud .hh .hr{color:#ff8a80}
+#hud .hl{list-style:none;margin:0;padding:3px 0;overflow:auto;flex:1;min-height:0}
+#hud .hl li{padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hud .hl li.he{color:#8293a8;white-space:normal}
+#hud .hl button{all:unset;cursor:pointer;display:block;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d9e3ef;padding:1px 0}
+#hud .hl button:hover{color:#ffc27a}
+#hud .hl button:focus-visible{outline:2px solid var(--acc);outline-offset:-1px}
+#hud .hl .k{color:#7fd1ff;margin-right:6px}
+#hud .hl .r{color:#ff8a80;margin-right:6px}
+#hud .hl .m{color:#8ea0b6}
+#hud .bar{display:inline-block;height:6px;vertical-align:1px;margin-right:6px;border-radius:1px;box-shadow:0 0 6px currentColor}
+#hud.compact .hl{display:none}
+#hud.compact .hp{flex-direction:row}
+#hud.compact .hh{border-bottom:0;width:100%}
+@media (max-width:768px){
+  #hud{display:none;left:0;right:0;top:var(--top);bottom:auto;max-height:64vh;overflow:auto;z-index:45;border-top:0;border-bottom:1px solid #2b3a50;box-shadow:0 18px 40px rgba(0,0,0,.6)}
+  #hud.sheet{display:block}
+  #hud .hud-g{grid-template-columns:1fr;height:auto}
+  #hud .hl{max-height:150px}
+}
+@media (prefers-reduced-motion:reduce){#sbar .sb-dot{box-shadow:none}}
+
+/* R5 (11 Nov), V3C-06 on the dark build: the start panel is a dialog above the HUD band (z 32 over 16), so on desktop it may use the
+   height down to the footer; the map, legend, zoom bar and reader still stop above the HUD (--foot). */
+@media (min-width:769px){#hero{max-height:calc(100% - var(--top) - var(--footb, var(--foot)) - 32px)}}
+/* QA v2-R6a (found by b5v2 after the V6AC-01 fix moved the zoom bar up above the real footer): on phones and tablets the start panel
+   ends above the zoom bar (footer + the 3-button stack), scrolling inside if it is taller, so zoom + is never under it. */
+/* QA v2-R7a V7AC-01: ... and it really scrolls: the older phone rule (v2_style.css) set overflow:visible, so a capped panel spilled its last
+   boxes over zoom +/- and Legend & filters (360x640-800, 375x667). It also ends above the first-visit notice while that shows (--nh = the
+   notice's measured height, v4_dark.js), and its search suggestions stay inside it. */
+@media (max-width:768px){
+  #hero{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;max-height:calc(100% - var(--top) - var(--foot) - max(136px, 72px + var(--nh, 0px)))}
+  #hero .slot .search ul{max-height:min(300px, calc(100vh - var(--top) - var(--foot) - max(136px, 72px + var(--nh, 0px)) - 150px))}
+}
+
+/* QA v2-R5a V5AC-01 / V5AC-04: the grid row is bound to the band, so each HUD list is a real scroll box (wheel and focus scroll it) and no row
+   sits out of sight below the band. V5AC-02: the Lines legend can fold to its header; on desktop below 900 px of height it starts folded so
+   Legend & filters keeps its room. */
+@media (min-width:769px){
+  #hud .hud-g{grid-template-rows:minmax(0,1fr)}
+  #hud .hp{min-height:0;overflow:hidden}
+}
+#linesbox h4.lbh{margin:6px 0 4px}
+#lbtog{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;width:100%;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;padding:2px 0}
+#lbtog .lbt{color:var(--muted);margin-left:10px;letter-spacing:0}
+#lbtog:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#linesbox.fold{padding-bottom:4px}
+
+/* R5a: About credit (owner decision 11 Nov): BMC yellow button as on St Albans Live, plain link; small coffee link beside AW DESIGN in the footer */
+.cred.credit{display:block}
+.cred.credit .wm{display:inline-block;margin-bottom:6px}
+.cred.credit p{margin:2px 0}
+.cred.credit .cr2{color:var(--muted)}
+.cred .bmc{margin:10px 0 2px}
+.bmc-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:#FFDD00;color:#1b1b1b!important;font-weight:800;font-size:13.5px;text-decoration:none;border:1px solid rgba(0,0,0,.25);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.bmc-btn:hover{filter:brightness(.95)}
+.bmc-btn:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.bmc-note{margin-top:4px;font-size:11.5px;color:var(--muted)}
+.foot .aw .awc{text-decoration:none;letter-spacing:0;margin-left:4px}
+.foot .aw .awc:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
 </style>
 </head>
 <body>
+<div id="sbar" role="region" aria-label="Map status"><span class="sb-t"><span class="sb-dot" aria-hidden="true"></span>UK Regs Map<span class="sb-x2"> · England</span></span><span class="sb-i"><b>525</b> nodes</span><span class="sb-i sb-x2"><b>836</b> quoted links</span><span class="sb-i sb-r"><b>52</b> edition flags</span><span class="sb-i sb-x"><b>24</b> ADs + BR 2010 full text</span><span class="sb-i sb-l sb-x1" id="sbshown">shown <b>-</b></span><span class="sb-i sb-l sb-x" id="sbmode"><b>-</b></span><span class="sb-i sb-l sb-x1" id="sbsel" hidden></span><span class="sb-sp"></span><button id="sbhud" type="button" aria-expanded="true" aria-controls="hud">Panels</button></div>
+
 <header class="top">
-  <div class="ttl" tabindex="-1"><span class="t-en">UK Building Regulations Map</span><span class="t-en t-sub">ENGLAND · AW DESIGN</span></div>
+  <div class="ttl" tabindex="0" role="button" aria-label="UK Building Regulations Map: show the start panel" title="Show the start panel"><span class="t-en">UK Building Regulations Map</span><span class="t-en t-sub">ENGLAND · AW DESIGN</span></div>
   <div class="seg" id="mode" role="group" aria-label="Layout">
-    <button data-m="dept" class="on"><span class="zh keep">Type</span><span class="en">By document type</span></button>
-    <button data-m="domain"><span class="zh keep">Domain</span><span class="en">By domain</span></button>
-    <button data-m="subject"><span class="zh keep">Subject</span><span class="en">By subject</span></button>
+    <button data-m="dept" aria-pressed="false"><span class="zh keep">Type</span><span class="en">By document type</span></button>
+    <button data-m="domain" class="on" aria-pressed="true"><span class="zh keep">Domain</span><span class="en">By domain</span></button>
+    <button data-m="subject" aria-pressed="false"><span class="zh keep">Subject</span><span class="en">By subject</span></button>
   </div>
   <div class="search" role="search">
     <svg class="si" width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="#c4763c" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5L13 13"/></svg>
@@ -493,6 +992,44 @@ body.panel-open.panel-col .zoombar{right:18px}
 <div id="loading"><span id="loadt">Arranging the documents and provisions…</span></div>
 <div id="stage"></div>
 <div id="labels"></div>
+
+<section id="hero" hidden aria-labelledby="heroh" tabindex="-1">
+  <button id="herox" class="x" type="button" aria-label="Close the start panel and explore the map" title="Explore the map">×</button>
+  <h1 id="heroh">UK Building Regulations Map</h1>
+  <p class="hs">How England's building regulations, Approved Documents and the British Standards they cite link together. Every citation line is quoted from its source, including the orange dashed lines a search preview draws to documents outside it. The white dashed lines are AI suggestions, labelled as such; grey lines show how the Regulations are laid out.</p>
+  <div class="slot" id="heroslot"></div>
+  <div class="hrow"><span class="hl">Try</span><div class="hchips" id="herochips"></div></div>
+  <p class="hub" id="herohub"></p>
+  <div class="acts">
+    <button id="ftbtn" class="ftb" type="button"><b>Read and search the full text</b><small>Building Regulations 2010 and all 24 Approved Documents, clause by clause</small></button>
+    <button id="altbtn" class="altb" type="button" aria-pressed="false"></button>
+    <button id="specbtn" class="specb" type="button" aria-haspopup="dialog" aria-controls="spec"><b>Check my spec</b><small>paste a list of standard numbers</small></button>
+  </div>
+</section>
+
+<div id="burstcap" aria-hidden="true"></div>
+<div id="ftlive" class="vh" role="status" aria-live="polite"></div>
+
+<div id="tools">
+  <button id="fttop" type="button"><span class="l">Full text</span><span class="s">Text</span></button>
+  <button id="alttop" type="button" aria-pressed="false"></button>
+  <button id="spectop" type="button" aria-haspopup="dialog" aria-controls="spec"><span class="l">Check my spec</span><span class="s">Spec check</span></button>
+</div>
+
+<div id="spec" role="dialog" aria-modal="true" aria-labelledby="spech" hidden>
+  <div class="box">
+    <button class="x" id="specx" type="button" aria-label="Close">×</button>
+    <div class="kick">Check my spec</div>
+    <h2 id="spech">Which edition do the Approved Documents cite?</h2>
+    <p class="lead">Paste a specification clause, a schedule or a list of standard numbers. The map picks out every standard number in it (BS, BS EN, BS EN ISO, BS ISO, BS IEC, BS EN IEC, PD, PAS, DD or CP; a bare EN, ISO or IEC number is matched only to its UK adoption with the same number) and shows which Approved Documents cite it, the edition they print, and what our edition check found.</p>
+    <div class="disc"><b>Not a compliance check</b><p>It reports only what the Approved Documents print and what our edition check found on 9 November 2026. "Status not checked" means we have not checked that standard, not that it is current. Statuses come only from the public sources listed, none run by BSI. It cannot tell which edition applies to your project: that depends on the Approved Document in force for your application and its transitional provisions. Many Approved Documents say a newer version of a listed standard may be used as guidance if it still addresses the requirements. Everything runs in your browser: nothing you paste is sent anywhere.</p></div>
+    <label for="spect" class="lab">Your text</label>
+    <textarea id="spect" rows="6" spellcheck="false" placeholder="For example: Fire alarm to BS 5839-1:2017. Sprinklers to BS EN 12845. Accessible design to BS 8300-2."></textarea>
+    <div class="srow"><button id="specgo" class="pri" type="button">Check</button><button id="specsample" type="button">Try a sample</button><button id="specclr" type="button">Clear</button><button id="speccsv" type="button" disabled>Download CSV</button></div>
+    <p id="specsum" aria-live="polite"></p>
+    <div id="specout"></div>
+  </div>
+</div>
 
 <aside id="side">
   <div class="shd" id="sideh" role="button" tabindex="0" aria-controls="side" aria-expanded="true"><h3>Legend &amp; filters</h3><span id="sidet" style="color:var(--muted)">−</span></div>
@@ -520,30 +1057,32 @@ body.panel-open.panel-col .zoombar{right:18px}
 
 <div class="zoombar"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zfit" aria-label="Fit all" style="font-size:13px">⤢</button><button id="zrot" type="button" aria-label="Auto-rotate" aria-pressed="true"><span aria-hidden="true">⟳</span><span class="rl" aria-hidden="true">Rotate</span></button></div>
 
+<section id="hud" aria-label="Dashboard panels"><div class="hud-g">
+  <section class="hp" aria-labelledby="hh-log"><h2 class="hh" id="hh-log">Search log <b id="hc-log">0</b></h2><ol class="hl" id="hl-log"></ol></section>
+  <section class="hp" aria-labelledby="hh-led"><h2 class="hh" id="hh-led">Edition check ledger <b id="hc-led">0</b></h2><ol class="hl" id="hl-led"></ol></section>
+  <section class="hp" aria-labelledby="hh-dom"><h2 class="hh" id="hh-dom">Dots per domain <b id="hc-dom">0</b></h2><ul class="hl" id="hl-dom"></ul></section>
+  <section class="hp" aria-labelledby="hh-cl"><h2 class="hh" id="hh-cl">Recently opened clauses <b id="hc-cl">0</b></h2><ol class="hl" id="hl-cl"></ol></section>
+  <section class="hp" aria-labelledby="hh-ix"><h2 class="hh" id="hh-ix">Full-text index <b id="hc-ix">0</b></h2><ul class="hl" id="hl-ix"></ul></section>
+</div></section>
 <footer class="foot">
   <span class="fd">Personal hobby project by AW Design, not a government website. Navigation aid, not legal advice: check the official text. England only. Transitional provisions can change which edition applies to a project. Data checked 9 November 2026.</span>
   <span class="fds">Hobby project by AW Design, not official, not legal advice. England only. Transitional provisions can change which edition applies. Data checked 9 November 2026. Licences: see About.</span>
   <span class="fl">Contains public sector information licensed under the Open Government Licence v3.0 (legislation.gov.uk, GOV.UK, HSE). British Standards: number, title and edition as printed in the Approved Documents only.</span>
-  <span class="aw">AW DESIGN</span>
+  <span class="aw">AW DESIGN <a class="awc" href="https://buymeacoffee.com/anzonn" target="_blank" rel="noopener" title="Buy me a coffee" aria-label="Buy me a coffee (voluntary, opens buymeacoffee.com)">☕</a></span>
   <span class="vc" id="visits" hidden>Visits: <span id="visitsn"></span></span>
   <span class="st" id="stats"></span>
   <span class="fps" id="fps"></span>
 </footer>
 
-<div id="notice" role="dialog" aria-modal="true" aria-labelledby="noticet">
-  <div class="nbox">
-    <h2 id="noticet">Personal hobby project</h2>
-    <p>This is not an official UK Government website and is not legal advice. Always check the official text. England only. The edition that applies to a project can depend on transitional provisions (when the notice or application was made and when work started); the edition shown is the one in force for new applications on the data date, 9 November 2026, including any text it already prints for later dates.</p>
-    <div class="row2"><button id="noticex" type="button">OK</button></div>
-  </div>
+<div id="notice" role="region" aria-label="Notice">
+  <p><b id="noticet">Personal hobby project.</b> Not an official website, not legal advice. England only; check the official text. <button id="noticeab" type="button" class="nlink">Full disclaimer</button></p>
+  <button id="noticex" type="button">OK</button>
 </div>
 <script>
-(function(){var n=document.getElementById('notice');if(!n)return;var k='ukmap_notice_ok',b=document.getElementById('noticex');
+(function(){var n=document.getElementById('notice');if(!n)return;var k='ukmap_notice_ok';
 try{if(localStorage.getItem(k)==='1'){n.hidden=true;return;}}catch(e){}
-function trap(e){if(n.hidden)return;if(e.key==='Tab'){e.preventDefault();b.focus();}else if(e.target!==b){e.stopImmediatePropagation();if(e.key!=='Enter'&&e.key!==' ')e.preventDefault();}}
-document.addEventListener('keydown',trap,true);
-b.addEventListener('click',function(){n.hidden=true;document.removeEventListener('keydown',trap,true);try{localStorage.setItem(k,'1');}catch(e){}});
-setTimeout(function(){try{b.focus();}catch(e){}},0);})();
+document.getElementById('noticex').addEventListener('click',function(){n.hidden=true;try{localStorage.setItem(k,'1');}catch(e){}});
+document.getElementById('noticeab').addEventListener('click',function(){var a=document.getElementById('abtb');if(a)a.click();});})();
 </script>
 
 <div id="about" role="dialog" aria-modal="true" aria-labelledby="abth">
@@ -575,6 +1114,23 @@ setTimeout(function(){try{b.focus();}catch(e){}},0);})();
       <li>One rule for every flag: a cited edition shows "newer edition exists" when a later edition, or a later +A amendment of the same edition, has been published. Corrigenda do not count. A successor with a different number (a series split or a replacement series) makes the cited edition "withdrawn" where a source shows it withdrawn, otherwise "newer edition exists"; where both apply, "withdrawn" is shown. A cited edition that is still the newest edition of its own number stays "cited edition current" even where a source calls it "superseded but remains current" because a European standard with another number replaces it in principle (BS 476-20, -21 and -22). The status is worked out for each Approved Document that cites the standard, and for each edition that document prints anywhere (its standards list, its text or its index; some print two). Where these citations have different results, the dot says "depends on citing AD" and the panel gives one row per Approved Document and edition, with the edition and title that document prints. Result: newer edition exists 40, cited edition withdrawn 12, cited edition current 25, depends on citing AD 7, inconclusive 1 (shown as not checked). The other standards say "not checked": no status is guessed from age.</li>
       <li>An Approved Document cites a specific edition. Using a newer edition is a designer's judgement to agree with building control.</li>
     </ul>
+    <h3>Edition check and spec check</h3>
+    <ul>
+      <li><b>Edition check</b>: the button on the start panel (and "Edition check 52" at the top right) shows the 52 standards that an Approved Document cites in an edition for which a public source not run by BSI shows a newer edition or amendment (40, of which 3 are a later amendment to the same edition) or a withdrawal (12). Select one to see the Approved Document's own sentence, the PDF page, the edition it prints, and the source we checked. The 7 standards whose status depends on the citing Approved Document are listed and shown separately and are not in the count. Many Approved Documents say the edition they list is the relevant one and that a newer version may be used as guidance if it still addresses the requirements; the card quotes that sentence where the citing Approved Document has it. So the check is a prompt to look, not a ban, and it cannot say which edition applies to a project. 84 of the 455 standards have a confirmed status; the other 371 are unknown, not current.</li>
+      <li><b>Check my spec</b>: paste text and the page finds standard numbers in it (BS, BS EN, BS EN ISO, BS ISO, BS IEC, BS EN IEC, PD, PAS, DD and CP; with or without spaces or colons, with years and amendments such as 2018+A2:2022, and parts written "-1" or "Part 1"). A standard is matched only on its prefix, number and part together: BS 845-1 and BS EN 845-1 are different standards. A bare EN, ISO or IEC number is matched only to its UK adoption with the same number, and a part that is not on the map is never matched to the whole standard. For each one it reports whether the map has it, which Approved Documents cite it, every edition each prints (with the PDF page), whether your edition or amendment differs from them, and the status from our check with its source. You can download the table as a CSV file. It runs in your browser and sends nothing anywhere. It is not a compliance check: it does not say which edition applies to your project, and a status is only as verified on the date shown.</li>
+      <li><b>Hidden until you zoom</b>: the 371 standards whose status has not been checked are hidden in the overview so the checked ones stand out. They all appear when you zoom in yourself (wheel, pinch or +). A search shows the one you searched for, selecting a document shows only the unchecked standards it cites, and "Show unchecked standards" in the legend shows them all.</li>
+    </ul>
+    <h3>Full text of the Regulations and the Approved Documents</h3>
+    <ul>
+      <li><b>What is here</b>: the full text of the Building Regulations 2010 (England text, the revised version valid from 6 November 2026 on legislation.gov.uk: 1,736 provisions, the 65 Schedule 1 requirements that apply in England, each with its limits on application) and of the 24 Approved Documents in force (1,625 PDF pages from GOV.UK), with their clause numbers, headings, paragraphs, lists, notes and tables. Diagrams, and tables that are not ruled in the PDF, are given as their caption with a link to that PDF page. Every block shows its PDF page. Open it from an Approved Document, a Schedule 1 Part, regulation 7 or SI 2010/2214 ("Full text" in the panel), or with "Read and search the full text".</li>
+      <li><b>England text</b>: legislation.gov.uk prints the England and Wales wording of the Regulations side by side. Using its own markings (each change says whether it was made for England or for Wales), the reader leaves out 41 provisions that apply only in Wales (each counted once with everything under it, for example Part 2B with the Welsh dutyholder regulations 11R to 11Z8, and requirement G2A), the Wales versions of 30 provisions whose England version is shown, and 19 Wales-only lines inside provisions that apply in England (for example the Welsh definitions of "higher-risk building" and "principal designer" in regulation 2(1)), and shows the England wording where the two differ inside one line. Where legislation.gov.uk gives only the Welsh wording of a few words, the line is shown as printed and says so.</li>
+      <li><b>From a requirement to its guidance</b>: each Schedule 1 requirement links to the section of the Approved Document that gives guidance on it, and that section links back to the requirement. A quote on a citation line opens the Approved Document at the paragraph it comes from, with the quote highlighted.</li>
+      <li><b>AD B and its 2029 amendments</b>: the GOV.UK PDFs of AD B Vol 1 and Vol 2 also print the text that takes effect on 2 September 2029. Its pages are marked "2029 text, in force from 2 September 2029" in the reader and in search results, and the pages it will replace are marked "In force until 1 September 2029". A quote is opened in the 2029 text only when it is not in the text in force, and the button says so.</li>
+      <li><b>Search</b>: words (hyphenated words too, such as fire-resisting or U-value) or a clause number (2.5, B1, regulation 7, or B1 2.5 for paragraph 2.5 of the guidance on B1) across the Regulations and all 24 Approved Documents, or one of them. A result opens the text at that clause and flies the map to its document. The search index and each document load only when you search or open them.</li>
+      <li><b>How it was made and checked</b>: the Approved Document text was extracted from the GOV.UK PDFs and checked against a second, independent extraction: 99.808% of its 2,669,652 characters match. It is then cleaned in stated steps, each checked: control characters left by the PDFs (their tab marks) are removed, checked against a third tool's reading; 1,185 words whose "fi", "fl" or "ff" the PDFs' text layer loses ("fre" for "fire") are repaired where the PDF's own glyphs show the ligature; running section titles at the top of continuation pages are shown in the page bar, not as paragraphs. Three paragraph numbers the extraction missed are restored and marked in the text: AD B Vol 1 B16 (printed twice) and AD M Vol 2 5.19 are split at the printed number, and AD G A27, which both tools read after A28, is marked. The Regulations are legislation.gov.uk's XML; all 3,420 lines were checked against its own rendition. Changes that legislation.gov.uk lists as not yet applied (for example those of SI 2026/335 from 24 March 2027) are flagged on the provision they affect and are not applied.</li>
+      <li><b>Licence</b>: Contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">Open Government Licence v3.0</a>. The Approved Documents are Crown copyright, published on GOV.UK; the Building Regulations 2010 come from legislation.gov.uk (The National Archives). Each reader names its source and edition. No British Standard text is reproduced: only the Approved Documents' own references to standards.</li>
+      <li><b>Limits</b>: the text is this site's reading of the PDFs, not an official version: some words that lose an "fi" or "fl" where the PDF gives no glyph evidence are shown as stored (search finds them either way, and each reader that has any says so), a symbol the PDF does not store as text is marked, a merged table cell may be split across rows, and paragraph breaks across columns or pages can fall in the wrong place. Read the PDF or legislation.gov.uk before relying on it. It is not legal advice.</li>
+    </ul>
     <h3>Sources</h3>
     <table>
       <tr><td>Acts and statutory instruments, from legislation.gov.uk (introductions, operative text, Schedule 1)</td><td class="n">26</td></tr>
@@ -595,18 +1151,18 @@ setTimeout(function(){try{b.focus();}catch(e){}},0);})();
     </ul>
     <h3>Licence and attribution</h3>
     <p>Contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">Open Government Licence v3.0</a>. Legislation: Crown copyright and database right, from <a href="https://www.legislation.gov.uk/" target="_blank" rel="noopener">legislation.gov.uk</a>. Approved Documents © Crown copyright, from <a href="https://www.gov.uk/government/collections/approved-documents" target="_blank" rel="noopener">GOV.UK</a>; each panel names the title and edition. HSE L153 © Crown copyright, from <a href="https://www.hse.gov.uk/pubns/books/l153.htm" target="_blank" rel="noopener">HSE</a>. British Standards are published by <a href="https://www.bsigroup.com/" target="_blank" rel="noopener">BSI</a>.</p>
-    <div class="cred"><span class="wm">AW<i></i>DESIGN</span><span>AW Design · Anzon Wong</span></div>
+    <div class="cred credit"><span class="wm">AW<i></i>DESIGN</span><p class="cr1">Made by <a href="https://anzonwong.com/" target="_blank" rel="noopener">Anzon Wong</a> · Architect · AW Design · St&nbsp;Albans</p><p class="cr2">Personal hobby project · not official</p><p class="bmc"><a class="bmc-btn" href="https://buymeacoffee.com/anzonn" target="_blank" rel="noopener">☕ Buy me a coffee</a></p><p class="bmc-note">Voluntary. It helps keep the map and its full text up to date.</p></div>
   </div>
 </div>
 
-<script src="data.js?v=20261109v3"></script>
-<script src="layout.js?v=20261109v3"></script>
-<script src="app.js?v=20261109v3"></script>
-<script src="counter.js?v=20261109v3"></script>
+<script src="data.js?v=20261111v8"></script>
+<script src="layout.js?v=20261111v8"></script>
+<script src="app.js?v=20261111v8"></script>
+<script src="counter.js?v=20261111v8"></script>
 <script>(function(){var f=document.querySelector(".foot"),r=document.documentElement;if(!f||!window.ResizeObserver)return;new ResizeObserver(function(){r.style.setProperty("--foot",Math.ceil(f.getBoundingClientRect().height)+"px")}).observe(f)})();</script>
 <script>(function(){ /* QA r2 C2-04 / C2-05: keyboard paths */
 var $=function(i){return document.getElementById(i)};
-var ok=$('noticex'); if(ok) ok.addEventListener('click',function(){setTimeout(function(){var t=document.querySelector('.ttl'); if(t) t.focus({preventScroll:true});},0);});
+var ok=$('noticex'); if(ok) ok.addEventListener('click',function(){setTimeout(function(){var hr=document.getElementById('hero'),t=hr&&!hr.hidden?hr:document.querySelector('.ttl'); if(t) t.focus({preventScroll:true});},0);});
 var ab=$('about'); if(ab) ab.addEventListener('keydown',function(e){ if(e.key!=='Tab') return; var f=[].slice.call(ab.querySelectorAll('a[href],button:not([disabled]),input,select,[tabindex]:not([tabindex="-1"])')).filter(function(x){return x.offsetParent!==null;}); if(!f.length) return;
   var a=f[0], z=f[f.length-1]; if(e.shiftKey && document.activeElement===a){e.preventDefault(); z.focus();} else if(!e.shiftKey && document.activeElement===z){e.preventDefault(); a.focus();} });
 /* QA r3 C3-01: r2 made the whole li a role=button around the Quote button, and Enter clicked the li, which the handler on li > .m never saw.
